@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:all": "concurrently -n web,api -c cyan,green \"npm run dev\" \"npm run dev --prefix server\"",
+    "server": "npm run dev --prefix server",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,json,html}\"",
@@ -24,6 +26,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "concurrently": "^10.0.5",
     "oxlint": "^1.79.0",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",

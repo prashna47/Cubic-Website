@@ -7,8 +7,9 @@ import axios from 'axios'
  * (see vite.config.ts). In production, set VITE_API_URL to the deployed API
  * origin, e.g. https://api.example.com
  */
+// Use `||` so an empty VITE_API_URL (common in .env) still falls back to the proxy.
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 

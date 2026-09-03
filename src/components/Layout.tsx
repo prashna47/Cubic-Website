@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import ProfileMenu from '@/components/ProfileMenu'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -13,13 +14,18 @@ export default function Layout() {
     <div className="min-h-svh flex flex-col">
       <header className="border-b border-line">
         <nav className="mx-auto max-w-5xl flex items-center gap-2 px-4 py-3">
-          <span className="mr-auto font-semibold text-fg">FYP&nbsp;Web</span>
+          <span className="mr-auto font-semibold text-fg">
+            CUBIC&nbsp;ALPHA&nbsp;TEAM
+          </span>
           <NavLink to="/" end className={linkClass}>
             Home
           </NavLink>
           <NavLink to="/about" className={linkClass}>
             About
           </NavLink>
+          <div className="ml-1">
+            <ProfileMenu />
+          </div>
         </nav>
       </header>
 

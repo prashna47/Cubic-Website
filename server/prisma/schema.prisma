@@ -1,0 +1,25 @@
+// https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // "sqlite" for zero-setup local dev. Change to "postgresql" for production
+  // (see server/.env.example for the steps).
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  // Null when the account was created via Google (no password set).
+  passwordHash String?
+  // Google's stable user id ("sub" claim). Null for email/password accounts.
+  googleId     String?  @unique
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
