@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Tailwind v4 reads these from @theme so you can use classes
+   like `bg-bg`, `text-fg`, `text-muted`, `border-line`, `bg-brand`, etc.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-bg: #ffffff;
+  --color-fg: #08060d;
+  --color-muted: #6b6375;
+  --color-line: #e5e4e7;
+  --color-brand: #6d28d9;
+  --color-brand-fg: #ffffff;
+
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #16171d;
+    --color-fg: #f3f4f6;
+    --color-muted: #9ca3af;
+    --color-line: #2e303a;
+    --color-brand: #a78bfa;
+    --color-brand-fg: #0b0b0f;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
