@@ -2,7 +2,8 @@ import 'dotenv/config'
 import { z } from 'zod'
 
 const schema = z.object({
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: z.string().min(1), // pooled connection (app)
+  DIRECT_URL: z.string().min(1), // direct connection (migrations); same as DATABASE_URL if no pooler
   CLERK_PUBLISHABLE_KEY: z.string().min(1),
   CLERK_SECRET_KEY: z.string().min(1),
   CLERK_WEBHOOK_SIGNING_SECRET: z.string().optional().default(''),

@@ -44,27 +44,31 @@ data can foreign-key to a user; it's synced from Clerk lazily and via webhook.
 **Before launch:** replace Clerk's shared dev Google credentials with your own
 Google OAuth client, and set a production Clerk instance (separate keys).
 
-## Database — PostgreSQL on Railway ✅
+## Database — PostgreSQL on Neon ✅
 
 - Relational — maps directly from an ERD (users + related tables, foreign keys).
-- Railway hosts the DB and can host the API in the same project.
+- **Neon** free tier: no credit card, ~0.5 GB, scales to zero when idle.
+- `DATABASE_URL` (pooled) + `DIRECT_URL` (direct, for migrations) — Neon's
+  "Prisma" connect tab gives both.
 - `server/prisma/schema.prisma` is the source of truth; `prisma migrate` evolves it.
-- Local option instead of Railway: `docker run --name fyp-db -e POSTGRES_PASSWORD=dev -p 5432:5432 -d postgres:17`
+- Browse it with `prisma:studio` or **DBeaver** (free GUI) — DBeaver is a client,
+  not a database; it connects to this same Postgres.
+- Local option: `docker run --name fyp-db -e POSTGRES_PASSWORD=dev -p 5432:5432 -d postgres:17`
 
 ### When another store fits better
 
 | Instead of Postgres | If…                                                                 |
 | ------------------- | ----------------------------------------------------------------- |
-| **MongoDB**         | Data is document-shaped, schema-flexible, few relations.           |
-| Redis (alongside)   | You need caching, rate-limit counters, or job queues — not primary storage. |
+| **MongoDB**         | Records are self-contained documents with few relations. Note: Prisma + Mongo loses `migrate` (push-only). |
+| Redis (alongside)   | Caching, rate-limit counters, job queues — not primary storage.    |
 
 ## Deployment
 
 | Part     | Where                                                              |
 | -------- | --------------------------------------------------------------- |
-| Frontend | **Vercel** or **Netlify** — connect the repo, auto-deploy on push. Set `VITE_*` env vars. |
-| API      | **Railway** — deploy `server/`, run `prisma migrate deploy` on release. |
-| Database | **Railway Postgres** — same project as the API.                    |
+| Frontend | **Netlify** or **Cloudflare Pages** — free tier allows commercial use (Vercel's Hobby tier does not). Auto-deploy on push; set `VITE_*` env vars. |
+| API      | **Render** / **Fly** / **Railway** — deploy `server/`, run `npm run prisma:deploy` on release. |
+| Database | **Neon Postgres** — free tier, separate from the API host.         |
 | Auth     | **Clerk** — create a production instance; point DNS/allowed origins at the live frontend. |
 
 ## Things to do before "released"

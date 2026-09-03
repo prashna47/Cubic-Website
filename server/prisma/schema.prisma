@@ -6,7 +6,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Pooled connection for the app; direct connection for migrations.
+  // Neon's dashboard gives you both (Connect > "Prisma" shows these two lines).
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Local mirror of the Clerk user. Clerk owns identity (email, password, OAuth,

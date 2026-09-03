@@ -1,14 +1,14 @@
 # FYP Web — API server
 
 Express + TypeScript + Prisma. Auth is handled by **Clerk** (this server only
-verifies Clerk session tokens); the database is **PostgreSQL** (Railway).
+verifies Clerk session tokens); the database is **PostgreSQL** (Neon).
 
 ## Setup
 
 ```bash
 cd server
 npm install
-cp .env.example .env        # fill in DATABASE_URL + Clerk keys
+cp .env.example .env        # fill in DATABASE_URL + DIRECT_URL + Clerk keys
 npm run prisma:migrate      # create tables
 npm run dev                  # http://localhost:4000
 ```
@@ -17,22 +17,23 @@ From the project root, `npm run dev:all` runs this + the frontend together.
 
 ## Environment (`.env`)
 
-| Var                           | Required | Notes                                                   |
-| ----------------------------- | -------- | ----------------------------------------------------- |
-| `DATABASE_URL`                | yes      | Railway → Postgres → Connect → Postgres Connection URL. |
-| `CLERK_PUBLISHABLE_KEY`       | yes      | Clerk dashboard → API keys.                             |
-| `CLERK_SECRET_KEY`            | yes      | Clerk dashboard → API keys. Server-only, keep secret.   |
-| `CLERK_WEBHOOK_SIGNING_SECRET`| no       | Enables `/api/webhooks/clerk`. See below.               |
-| `PORT`                        | no       | Default `4000`.                                         |
-| `CLIENT_URL`                  | no       | CORS allow-origin. Default `http://localhost:5173`.     |
+| Var                            | Required | Notes                                                                                    |
+| ------------------------------ | -------- | ---------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                 | yes      | Neon → Connect → Prisma → pooled url (host has `-pooler`).                               |
+| `DIRECT_URL`                   | yes      | Neon direct url (no `-pooler`); used by migrations. Same as `DATABASE_URL` if no pooler. |
+| `CLERK_PUBLISHABLE_KEY`        | yes      | Clerk dashboard → API keys.                                                              |
+| `CLERK_SECRET_KEY`             | yes      | Clerk dashboard → API keys. Server-only, keep secret.                                    |
+| `CLERK_WEBHOOK_SIGNING_SECRET` | no       | Enables `/api/webhooks/clerk`. See below.                                                |
+| `PORT`                         | no       | Default `4000`.                                                                          |
+| `CLIENT_URL`                   | no       | CORS allow-origin. Default `http://localhost:5173`.                                      |
 
 ## Endpoints
 
-| Method | Path                   | Auth        | Returns                     |
-| ------ | ---------------------- | ----------- | --------------------------- |
-| GET    | `/api/health`          | none        | `{ status, webhookEnabled }`|
-| GET    | `/api/me`              | Clerk token | `{ user }` — local row, created from Clerk on first call |
-| POST   | `/api/webhooks/clerk`  | svix sig    | syncs `User` on `user.created/updated/deleted` |
+| Method | Path                  | Auth        | Returns                                                  |
+| ------ | --------------------- | ----------- | -------------------------------------------------------- |
+| GET    | `/api/health`         | none        | `{ status, webhookEnabled }`                             |
+| GET    | `/api/me`             | Clerk token | `{ user }` — local row, created from Clerk on first call |
+| POST   | `/api/webhooks/clerk` | svix sig    | syncs `User` on `user.created/updated/deleted`           |
 
 Protected routes use Clerk's `requireAuth()`; the frontend attaches the token as
 `Authorization: Bearer <token>` (see `src/components/ApiAuthBridge.tsx`).
@@ -58,21 +59,23 @@ The `User` table mirrors Clerk (id, email, name, avatar). Two mechanisms:
 
 ## Common commands
 
-| Command                   | What it does                     |
-| ------------------------- | -------------------------------- |
-| `npm run dev`             | Start with auto-reload (tsx)      |
-| `npm run build`           | Compile to `dist/`               |
-| `npm start`               | Run the compiled server           |
-| `npm run prisma:migrate`  | Create/apply a migration          |
-| `npm run prisma:studio`   | Open the DB browser               |
+| Command                  | What it does                 |
+| ------------------------ | ---------------------------- |
+| `npm run dev`            | Start with auto-reload (tsx) |
+| `npm run build`          | Compile to `dist/`           |
+| `npm start`              | Run the compiled server      |
+| `npm run prisma:migrate` | Create/apply a migration     |
+| `npm run prisma:studio`  | Open the DB browser          |
 
-## Deployment (Railway)
+## Deployment
 
-The API and the Postgres database can live in the same Railway project.
+Database stays on **Neon**. Host the API on any Node platform (Render, Fly,
+Railway, a VPS).
 
-1. New service → deploy from the repo, root directory `server/`.
-2. Build: `npm install && npm run build && npx prisma migrate deploy`
+1. New web service → deploy from the repo, root directory `server/`.
+2. Build: `npm install && npm run build`
+   Pre-deploy / release: `npm run prisma:deploy` (applies migrations)
    Start: `npm start`
-3. Variables: `DATABASE_URL` (reference the Postgres service),
+3. Variables: `DATABASE_URL`, `DIRECT_URL` (both from Neon),
    `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`,
    `CLERK_WEBHOOK_SIGNING_SECRET`, `CLIENT_URL` (your deployed frontend URL).

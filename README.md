@@ -1,13 +1,13 @@
 # FYP Web
 
 React + Vite frontend, Express + Prisma API. Auth by **Clerk**, database on
-**Railway Postgres**.
+**Neon Postgres**.
 
 ## Requirements
 
 - Node.js 20+ (installed: v24)
-- A [Clerk](https://clerk.com) application (free)
-- A [Railway](https://railway.app) Postgres database (free tier)
+- A [Clerk](https://clerk.com) application (free tier — 10k monthly users)
+- A [Neon](https://neon.tech) Postgres database (free tier — no card)
 
 ## Getting started
 
@@ -22,7 +22,7 @@ cp .env.example .env
 
 # 3. Backend env
 cp server/.env.example server/.env
-#   set DATABASE_URL           (Railway > Postgres > Connect > Postgres Connection URL)
+#   set DATABASE_URL + DIRECT_URL   (Neon > Connect > framework "Prisma" — copy both lines)
 #   set CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY   (Clerk dashboard > API keys)
 #   set CLERK_WEBHOOK_SIGNING_SECRET   (optional now — see server/README.md)
 
@@ -112,14 +112,18 @@ server/                  Backend (Express + Prisma)
 
 Path alias: `@/` → `src/`.
 
-## Database (Railway Postgres)
+## Database (Neon Postgres — free)
 
-1. New project on [railway.app](https://railway.app) → **Add → Database →
-   PostgreSQL**.
-2. Postgres service → **Connect** → copy **Postgres Connection URL** →
-   `server/.env` `DATABASE_URL`.
+1. Create a project at [neon.tech](https://neon.tech) (sign in with GitHub, no card).
+2. **Connect** → framework **Prisma** → copy the two lines it shows into
+   `server/.env`: `DATABASE_URL` (pooled) and `DIRECT_URL` (direct).
 3. `npm --prefix server run prisma:migrate` creates the tables.
 4. Change the schema in `server/prisma/schema.prisma`, re-run
    `prisma:migrate` to evolve it.
+
+**Browse the data** with any Postgres GUI — `npm --prefix server run
+prisma:studio`, or [DBeaver](https://dbeaver.io) (free): new Postgres
+connection, paste the `DIRECT_URL` values (host, database, user, password;
+SSL on).
 
 See [STACK.md](STACK.md) for the wider stack and deployment notes.
