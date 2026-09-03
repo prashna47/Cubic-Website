@@ -1,72 +1,78 @@
 # FYP Web — API server
 
-Express + TypeScript + Prisma. JWT auth with email/password and Google Sign-In.
+Express + TypeScript + Prisma. Auth is handled by **Clerk** (this server only
+verifies Clerk session tokens); the database is **PostgreSQL** (Railway).
 
 ## Setup
 
 ```bash
 cd server
 npm install
-cp .env.example .env        # then edit .env (a JWT_SECRET is required)
-npm run prisma:migrate      # creates the SQLite database
+cp .env.example .env        # fill in DATABASE_URL + Clerk keys
+npm run prisma:migrate      # create tables
 npm run dev                  # http://localhost:4000
 ```
 
-The frontend's Vite dev server proxies `/api` to this server (port 4000), so run
-both while developing. From the project root: `npm run dev:all`.
+From the project root, `npm run dev:all` runs this + the frontend together.
 
 ## Environment (`.env`)
 
-| Var                | Required | Notes                                                                                          |
-| ------------------ | -------- | ---------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`     | yes      | `file:./dev.db` for SQLite. Postgres URL to switch.                                            |
-| `JWT_SECRET`       | yes      | Long random string. `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
-| `JWT_EXPIRES_IN`   | no       | Default `7d`.                                                                                  |
-| `GOOGLE_CLIENT_ID` | no       | Enables `POST /api/auth/google`. Blank = Google disabled.                                      |
-| `PORT`             | no       | Default `4000`.                                                                                |
-| `CLIENT_URL`       | no       | CORS allow-origin. Default `http://localhost:5173`.                                            |
+| Var                           | Required | Notes                                                   |
+| ----------------------------- | -------- | ----------------------------------------------------- |
+| `DATABASE_URL`                | yes      | Railway → Postgres → Connect → Postgres Connection URL. |
+| `CLERK_PUBLISHABLE_KEY`       | yes      | Clerk dashboard → API keys.                             |
+| `CLERK_SECRET_KEY`            | yes      | Clerk dashboard → API keys. Server-only, keep secret.   |
+| `CLERK_WEBHOOK_SIGNING_SECRET`| no       | Enables `/api/webhooks/clerk`. See below.               |
+| `PORT`                        | no       | Default `4000`.                                         |
+| `CLIENT_URL`                  | no       | CORS allow-origin. Default `http://localhost:5173`.     |
 
 ## Endpoints
 
-| Method | Path                 | Body                               | Returns                     |
-| ------ | -------------------- | ---------------------------------- | --------------------------- |
-| GET    | `/api/health`        | —                                  | `{ status, googleEnabled }` |
-| POST   | `/api/auth/register` | `{ name, email, password }`        | `{ token, user }`           |
-| POST   | `/api/auth/login`    | `{ email, password }`              | `{ token, user }`           |
-| POST   | `/api/auth/google`   | `{ credential }` (Google ID token) | `{ token, user }`           |
-| GET    | `/api/auth/me`       | — (Bearer token)                   | `{ user }`                  |
+| Method | Path                   | Auth        | Returns                     |
+| ------ | ---------------------- | ----------- | --------------------------- |
+| GET    | `/api/health`          | none        | `{ status, webhookEnabled }`|
+| GET    | `/api/me`              | Clerk token | `{ user }` — local row, created from Clerk on first call |
+| POST   | `/api/webhooks/clerk`  | svix sig    | syncs `User` on `user.created/updated/deleted` |
 
-`token` is a JWT — the frontend stores it in `localStorage` and sends it as
-`Authorization: Bearer <token>`.
+Protected routes use Clerk's `requireAuth()`; the frontend attaches the token as
+`Authorization: Bearer <token>` (see `src/components/ApiAuthBridge.tsx`).
 
-## Google Sign-In setup
+## User sync
 
-1. [Google Cloud Console](https://console.cloud.google.com/) → create a project.
-2. **APIs & Services → Credentials → Create credentials → OAuth client ID**.
-   - Application type: **Web application**
-   - Authorized JavaScript origins: `http://localhost:5173`
-     (add your production URL later)
-3. Copy the **Client ID** into:
-   - `server/.env` → `GOOGLE_CLIENT_ID`
-   - project root `.env` → `VITE_GOOGLE_CLIENT_ID` (same value)
-4. Restart both dev servers.
+The `User` table mirrors Clerk (id, email, name, avatar). Two mechanisms:
 
-The frontend uses Google Identity Services to get an ID token and posts it to
-`/api/auth/google`; the server verifies it with `google-auth-library` and
-creates or links the user.
+- **Lazy** — `getOrCreateUser()` in `src/lib/users.ts` creates the row on the
+  user's first authenticated request. Always on.
+- **Webhook** — `POST /api/webhooks/clerk` keeps email/name in sync and handles
+  account deletion. Recommended for production.
 
-## Switching to PostgreSQL
+### Enabling the webhook
 
-1. `prisma/schema.prisma` → `provider = "postgresql"`
-2. `.env` → `DATABASE_URL="postgresql://user:pass@localhost:5432/fyp?schema=public"`
-3. `rm -rf prisma/migrations` (dev only) then `npm run prisma:migrate`
+1. Deploy the API (or expose it with `ngrok http 4000` for local testing).
+2. Clerk dashboard → **Webhooks** → **Add Endpoint**
+   - URL: `https://<your-api>/api/webhooks/clerk`
+   - Events: `user.created`, `user.updated`, `user.deleted`
+3. Copy the endpoint's **Signing Secret** → `.env`
+   `CLERK_WEBHOOK_SIGNING_SECRET`.
+4. Restart the server (`/api/health` will show `"webhookEnabled": true`).
 
 ## Common commands
 
-| Command                  | What it does                       |
-| ------------------------ | ---------------------------------- |
-| `npm run dev`            | Start with auto-reload (tsx watch) |
-| `npm run build`          | Compile TypeScript to `dist/`      |
-| `npm start`              | Run the compiled server            |
-| `npm run prisma:migrate` | Create/apply a migration           |
-| `npm run prisma:studio`  | Open Prisma Studio (DB browser)    |
+| Command                   | What it does                     |
+| ------------------------- | -------------------------------- |
+| `npm run dev`             | Start with auto-reload (tsx)      |
+| `npm run build`           | Compile to `dist/`               |
+| `npm start`               | Run the compiled server           |
+| `npm run prisma:migrate`  | Create/apply a migration          |
+| `npm run prisma:studio`   | Open the DB browser               |
+
+## Deployment (Railway)
+
+The API and the Postgres database can live in the same Railway project.
+
+1. New service → deploy from the repo, root directory `server/`.
+2. Build: `npm install && npm run build && npx prisma migrate deploy`
+   Start: `npm start`
+3. Variables: `DATABASE_URL` (reference the Postgres service),
+   `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`,
+   `CLERK_WEBHOOK_SIGNING_SECRET`, `CLIENT_URL` (your deployed frontend URL).

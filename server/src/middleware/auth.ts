@@ -1,26 +1,13 @@
-import type { NextFunction, Request, Response } from 'express'
-import { verifyToken } from '../lib/jwt.js'
+import { getAuth } from '@clerk/express'
+import type { Request } from 'express'
 
-// Adds `req.userId` when a valid Bearer token is present.
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Express {
-    interface Request {
-      userId?: string
-    }
-  }
-}
+// Clerk's clerkMiddleware() (mounted in index.ts) populates the auth context.
+// requireAuth() rejects unauthenticated requests with 401 — use it per route.
+export { requireAuth } from '@clerk/express'
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers.authorization
-  if (!header?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Not authenticated' })
-  }
-  try {
-    const { sub } = verifyToken(header.slice(7))
-    req.userId = sub
-    next()
-  } catch {
-    return res.status(401).json({ error: 'Invalid or expired token' })
-  }
+/** The authenticated Clerk user id, or throw. Use inside requireAuth() routes. */
+export function clerkUserId(req: Request): string {
+  const { userId } = getAuth(req)
+  if (!userId) throw new Error('Not authenticated')
+  return userId
 }

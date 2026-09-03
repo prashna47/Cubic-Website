@@ -3,9 +3,9 @@ import { z } from 'zod'
 
 const schema = z.object({
   DATABASE_URL: z.string().min(1),
-  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
-  JWT_EXPIRES_IN: z.string().default('7d'),
-  GOOGLE_CLIENT_ID: z.string().optional().default(''),
+  CLERK_PUBLISHABLE_KEY: z.string().min(1),
+  CLERK_SECRET_KEY: z.string().min(1),
+  CLERK_WEBHOOK_SIGNING_SECRET: z.string().optional().default(''),
   PORT: z.coerce.number().default(4000),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
 })
@@ -19,4 +19,4 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data
-export const googleEnabled = env.GOOGLE_CLIENT_ID.length > 0
+export const webhookEnabled = env.CLERK_WEBHOOK_SIGNING_SECRET.length > 0

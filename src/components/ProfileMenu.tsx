@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
+import { Link } from 'react-router-dom'
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 
 function UserIcon() {
   return (
@@ -20,16 +20,27 @@ function UserIcon() {
   )
 }
 
+/** Signed-out: our icon + hover/click dropdown. Signed-in: Clerk's UserButton. */
 export default function ProfileMenu() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  return (
+    <>
+      <SignedOut>
+        <SignedOutMenu />
+      </SignedOut>
+      <SignedIn>
+        <UserButton appearance={{ elements: { avatarBox: 'h-9 w-9' } }} />
+      </SignedIn>
+    </>
+  )
+}
+
+function SignedOutMenu() {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   )
-  // True once the user *clicks* the trigger — keeps the menu open even after
-  // the pointer leaves (hover alone closes it again).
+  // A click "pins" the menu open so it survives the pointer leaving.
   const pinned = useRef(false)
 
   const clearCloseTimer = () => {
@@ -40,8 +51,6 @@ export default function ProfileMenu() {
     pinned.current = false
     setOpen(false)
   }
-
-  // Hover: open immediately, close shortly after leaving (unless pinned).
   const handleEnter = () => {
     clearCloseTimer()
     setOpen(true)
@@ -50,8 +59,6 @@ export default function ProfileMenu() {
     if (pinned.current) return
     closeTimer.current = setTimeout(() => setOpen(false), 120)
   }
-
-  // Click / tap: toggle a pinned-open state (works without hover, e.g. touch).
   const handleTriggerClick = () => {
     if (open && pinned.current) {
       close()
@@ -62,7 +69,6 @@ export default function ProfileMenu() {
     }
   }
 
-  // Close on outside click / Escape.
   useEffect(() => {
     if (!open) return
     const onPointerDown = (e: MouseEvent) => {
@@ -79,12 +85,6 @@ export default function ProfileMenu() {
     }
   }, [open])
 
-  const handleLogout = () => {
-    logout()
-    close()
-    navigate('/')
-  }
-
   return (
     <div
       ref={wrapRef}
@@ -100,16 +100,7 @@ export default function ProfileMenu() {
         aria-label="Account menu"
         className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-muted transition-colors hover:bg-line/60 hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
       >
-        {user?.avatarUrl ? (
-          <img
-            src={user.avatarUrl}
-            alt=""
-            className="h-full w-full rounded-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <UserIcon />
-        )}
+        <UserIcon />
       </button>
 
       {open && (
@@ -117,43 +108,22 @@ export default function ProfileMenu() {
           role="menu"
           className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-line bg-bg shadow-lg"
         >
-          {user ? (
-            <>
-              <div className="border-b border-line px-4 py-3">
-                <p className="truncate text-sm font-medium text-fg">
-                  {user.name}
-                </p>
-                <p className="truncate text-xs text-muted">{user.email}</p>
-              </div>
-              <button
-                type="button"
-                role="menuitem"
-                onClick={handleLogout}
-                className="block w-full px-4 py-2.5 text-left text-sm text-fg hover:bg-line/60"
-              >
-                Log out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                role="menuitem"
-                onClick={close}
-                className="block px-4 py-2.5 text-sm font-medium text-fg hover:bg-line/60"
-              >
-                Log in
-              </Link>
-              <Link
-                to="/login?mode=register"
-                role="menuitem"
-                onClick={close}
-                className="block px-4 py-2.5 text-sm text-muted hover:bg-line/60 hover:text-fg"
-              >
-                Create account
-              </Link>
-            </>
-          )}
+          <Link
+            to="/login"
+            role="menuitem"
+            onClick={close}
+            className="block px-4 py-2.5 text-sm font-medium text-fg hover:bg-line/60"
+          >
+            Log in
+          </Link>
+          <Link
+            to="/sign-up"
+            role="menuitem"
+            onClick={close}
+            className="block px-4 py-2.5 text-sm text-muted hover:bg-line/60 hover:text-fg"
+          >
+            Create account
+          </Link>
         </div>
       )}
     </div>

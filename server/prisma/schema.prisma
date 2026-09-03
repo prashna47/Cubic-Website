@@ -5,21 +5,20 @@ generator client {
 }
 
 datasource db {
-  // "sqlite" for zero-setup local dev. Change to "postgresql" for production
-  // (see server/.env.example for the steps).
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// Local mirror of the Clerk user. Clerk owns identity (email, password, OAuth,
+// MFA); this row exists so app data can have a foreign key to a user, and is
+// created/updated from Clerk (lazily on first authenticated request, and via
+// the Clerk webhook — see server/README.md).
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String
-  // Null when the account was created via Google (no password set).
-  passwordHash String?
-  // Google's stable user id ("sub" claim). Null for email/password accounts.
-  googleId     String?  @unique
-  avatarUrl    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

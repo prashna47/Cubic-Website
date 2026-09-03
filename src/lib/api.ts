@@ -7,15 +7,22 @@ import axios from 'axios'
  * (see vite.config.ts). In production, set VITE_API_URL to the deployed API
  * origin, e.g. https://api.example.com
  */
-// Use `||` so an empty VITE_API_URL (common in .env) still falls back to the proxy.
 export const api = axios.create({
+  // `||` so an empty VITE_API_URL still falls back to the dev proxy.
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach the auth token (if you store one) to every request.
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+// The Clerk session-token getter is registered at runtime by <ApiAuthBridge />.
+type TokenGetter = () => Promise<string | null>
+let getToken: TokenGetter = async () => null
+
+export function setTokenGetter(fn: TokenGetter) {
+  getToken = fn
+}
+
+api.interceptors.request.use(async (config) => {
+  const token = await getToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })

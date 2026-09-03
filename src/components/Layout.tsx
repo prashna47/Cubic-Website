@@ -1,5 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
 import ProfileMenu from '@/components/ProfileMenu'
+import { NavLink, Outlet } from 'react-router-dom'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
