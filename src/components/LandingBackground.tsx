@@ -41,7 +41,7 @@ const BLOBS: BlobSpec[] = [
     fy: 0.012,
     px: 0.3,
     py: 1.9,
-    r: 0.72,
+    r: 0.46,
     rAmp: 0.09,
     rF: 0.019,
     rP: 0.5,
@@ -60,7 +60,7 @@ const BLOBS: BlobSpec[] = [
     fy: 0.017,
     px: 2.2,
     py: 0.7,
-    r: 0.6,
+    r: 0.4,
     rAmp: 0.08,
     rF: 0.015,
     rP: 1.4,
@@ -79,7 +79,7 @@ const BLOBS: BlobSpec[] = [
     fy: 0.013,
     px: 3.5,
     py: 3.0,
-    r: 0.85,
+    r: 0.35,
     rAmp: 0.1,
     rF: 0.011,
     rP: 0.2,
@@ -150,7 +150,8 @@ export default function LandingBackground() {
     let w = 0
     let h = 0
     let unit = 0
-    const RES = 0.32 // render at ~1/3 size, upscale for free softness
+    const RES = 0.7 // render at ~1/3 size, upscale for free softness
+    const SPEED = 1.5 // global animation-speed multiplier
 
     const resize = () => {
       // Fallbacks so a 0-size / detached context can't produce NaN dimensions.
@@ -166,7 +167,7 @@ export default function LandingBackground() {
 
     const draw = (nowMs: number) => {
       if (!Number.isFinite(unit) || unit <= 0) return
-      const t = nowMs / 1000
+      const t = (nowMs / 1000) * SPEED
       ctx.globalCompositeOperation = 'source-over'
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, w, h)
