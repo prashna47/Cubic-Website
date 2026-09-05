@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { api } from '@/lib/api'
@@ -17,6 +18,12 @@ export default function Home() {
     queryFn: async () => (await api.get<MeResponse>('/me')).data,
     enabled: !!isSignedIn,
   })
+
+  // Slow-moving black → grey gradient background, landing page only.
+  useEffect(() => {
+    document.body.classList.add('landing')
+    return () => document.body.classList.remove('landing')
+  }, [])
 
   return (
     <section className="space-y-6">

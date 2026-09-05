@@ -38,3 +38,44 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+
+/* ---------------------------------------------------------------------------
+   Landing page: slow-moving black → grey gradient background.
+   Home.tsx toggles `body.landing` while that route is mounted. The dark
+   token overrides keep the header/footer/text legible in either OS theme.
+--------------------------------------------------------------------------- */
+@keyframes landing-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+body.landing {
+  --color-bg: #121214;
+  --color-fg: #f4f4f5;
+  --color-muted: #a1a1aa;
+  --color-line: #2b2b30;
+  --color-brand: #a78bfa;
+  --color-brand-fg: #0b0b0f;
+
+  background: linear-gradient(
+    125deg,
+    #050505 0%,
+    #171717 25%,
+    #34343a 50%,
+    #171717 75%,
+    #050505 100%
+  );
+  background-size: 300% 300%;
+  animation: landing-gradient 40s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.landing {
+    animation: none;
+  }
+}
