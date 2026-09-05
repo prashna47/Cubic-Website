@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import type { ReactNode } from 'react'
 import App from '@/App.tsx'
 import { queryClient } from '@/lib/queryClient'
+import '@fontsource-variable/inter'
 import './index.css'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
