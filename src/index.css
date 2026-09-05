@@ -64,65 +64,20 @@ body.landing {
   pointer-events: none;
 }
 
-.landing-blob {
+.landing-bg canvas {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 255, 255, 0.85),
-    rgba(255, 255, 255, 0) 70%
-  );
-  will-change: transform;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Frosted-glass softening; scale past the edges so the blur has no border. */
+  filter: blur(26px);
+  transform: scale(1.25);
+  transform-origin: center;
 }
 
-.landing-blob-1 {
-  width: 46vmax;
-  height: 46vmax;
-  top: -12vmax;
-  left: -8vmax;
-  opacity: 0.28;
-  animation: landing-drift-1 30s ease-in-out infinite alternate;
-}
-
-.landing-blob-2 {
-  width: 40vmax;
-  height: 40vmax;
-  top: 18vmax;
-  right: -8vmax;
-  opacity: 0.22;
-  animation: landing-drift-2 38s ease-in-out infinite alternate;
-}
-
-.landing-blob-3 {
-  width: 54vmax;
-  height: 54vmax;
-  bottom: -20vmax;
-  left: 24vmax;
-  opacity: 0.16;
-  animation: landing-drift-3 46s ease-in-out infinite alternate;
-}
-
-@keyframes landing-drift-1 {
-  to {
-    transform: translate(12vmax, 9vmax) scale(1.15);
-  }
-}
-
-@keyframes landing-drift-2 {
-  to {
-    transform: translate(-14vmax, 7vmax) scale(0.9);
-  }
-}
-
-@keyframes landing-drift-3 {
-  to {
-    transform: translate(9vmax, -11vmax) scale(1.1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing-blob {
-    animation: none;
+@media (max-width: 768px) {
+  .landing-bg canvas {
+    filter: blur(18px);
+    transform: scale(1.3);
   }
 }
