@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { api } from '@/lib/api'
+import LandingBackground from '@/components/LandingBackground'
 
 type HealthResponse = { status: string }
 type MeResponse = { user: { id: string; email: string; name: string | null } }
@@ -19,7 +20,7 @@ export default function Home() {
     enabled: !!isSignedIn,
   })
 
-  // Slow-moving black → grey gradient background, landing page only.
+  // Landing-page-only dark theme; <LandingBackground /> paints the blobs.
   useEffect(() => {
     document.body.classList.add('landing')
     return () => document.body.classList.remove('landing')
@@ -27,6 +28,7 @@ export default function Home() {
 
   return (
     <section className="space-y-6">
+      <LandingBackground />
       <div>
         <h1 className="text-3xl font-semibold text-fg">Welcome 👋</h1>
         <p className="mt-2 text-muted">

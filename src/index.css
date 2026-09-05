@@ -40,42 +40,89 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Landing page: slow-moving black → grey gradient background.
-   Home.tsx toggles `body.landing` while that route is mounted. The dark
-   token overrides keep the header/footer/text legible in either OS theme.
+   Landing page: black background with soft white blobs drifting very slowly.
+   Home.tsx toggles `body.landing` (dark token overrides so the header/footer
+   stay legible in either OS theme) and renders <LandingBackground />.
 --------------------------------------------------------------------------- */
-@keyframes landing-gradient {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
 body.landing {
-  --color-bg: #121214;
+  --color-bg: #0b0b0d;
   --color-fg: #f4f4f5;
   --color-muted: #a1a1aa;
-  --color-line: #2b2b30;
+  --color-line: #26262b;
   --color-brand: #a78bfa;
   --color-brand-fg: #0b0b0f;
 
-  background: linear-gradient(
-    125deg,
-    #050505 0%,
-    #171717 25%,
-    #34343a 50%,
-    #171717 75%,
-    #050505 100%
+  background: #000;
+}
+
+.landing-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+.landing-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0) 70%
   );
-  background-size: 300% 300%;
-  animation: landing-gradient 40s ease-in-out infinite;
+  will-change: transform;
+}
+
+.landing-blob-1 {
+  width: 46vmax;
+  height: 46vmax;
+  top: -12vmax;
+  left: -8vmax;
+  opacity: 0.28;
+  animation: landing-drift-1 30s ease-in-out infinite alternate;
+}
+
+.landing-blob-2 {
+  width: 40vmax;
+  height: 40vmax;
+  top: 18vmax;
+  right: -8vmax;
+  opacity: 0.22;
+  animation: landing-drift-2 38s ease-in-out infinite alternate;
+}
+
+.landing-blob-3 {
+  width: 54vmax;
+  height: 54vmax;
+  bottom: -20vmax;
+  left: 24vmax;
+  opacity: 0.16;
+  animation: landing-drift-3 46s ease-in-out infinite alternate;
+}
+
+@keyframes landing-drift-1 {
+  to {
+    transform: translate(12vmax, 9vmax) scale(1.15);
+  }
+}
+
+@keyframes landing-drift-2 {
+  to {
+    transform: translate(-14vmax, 7vmax) scale(0.9);
+  }
+}
+
+@keyframes landing-drift-3 {
+  to {
+    transform: translate(9vmax, -11vmax) scale(1.1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.landing {
+  .landing-blob {
     animation: none;
   }
 }
