@@ -153,8 +153,9 @@ export default function LandingBackground() {
     const RES = 0.32 // render at ~1/3 size, upscale for free softness
 
     const resize = () => {
-      const cw = canvas.clientWidth || window.innerWidth
-      const ch = canvas.clientHeight || window.innerHeight
+      // Fallbacks so a 0-size / detached context can't produce NaN dimensions.
+      const cw = canvas.clientWidth || window.innerWidth || 1280
+      const ch = canvas.clientHeight || window.innerHeight || 720
       w = Math.max(320, Math.min(760, Math.round(cw * RES)))
       h = Math.max(200, Math.round(w * (ch / cw)))
       canvas.width = w
@@ -164,6 +165,7 @@ export default function LandingBackground() {
     resize()
 
     const draw = (nowMs: number) => {
+      if (!Number.isFinite(unit) || unit <= 0) return
       const t = nowMs / 1000
       ctx.globalCompositeOperation = 'source-over'
       ctx.fillStyle = '#000000'
