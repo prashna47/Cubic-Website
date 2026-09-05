@@ -1,5 +1,7 @@
-import ProfileMenu from '@/components/ProfileMenu'
+import { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import LandingBackground from '@/components/LandingBackground'
+import ProfileMenu from '@/components/ProfileMenu'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -10,8 +12,15 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   ].join(' ')
 
 export default function Layout() {
+  // Ambient background + dark palette on every page.
+  useEffect(() => {
+    document.body.classList.add('landing')
+    return () => document.body.classList.remove('landing')
+  }, [])
+
   return (
     <div className="min-h-svh flex flex-col">
+      <LandingBackground />
       <header className="border-b border-line">
         <nav className="mx-auto max-w-5xl flex items-center gap-2 px-2 py-3">
           <span className="mr-auto font-semibold text-fg">

@@ -1,8 +1,6 @@
-import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { api } from '@/lib/api'
-import LandingBackground from '@/components/LandingBackground'
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
+import { useQuery } from '@tanstack/react-query'
 
 type HealthResponse = { status: string }
 type MeResponse = { user: { id: string; email: string; name: string | null } }
@@ -20,23 +18,15 @@ export default function Home() {
     enabled: !!isSignedIn,
   })
 
-  // Landing-page-only dark theme; <LandingBackground /> paints the blobs.
-  useEffect(() => {
-    document.body.classList.add('landing')
-    return () => document.body.classList.remove('landing')
-  }, [])
-
   return (
     <section className="space-y-6">
-      <LandingBackground />
+      <div className="mb-30"></div>
       <div>
-        <h1 className="text-3xl font-semibold text-fg">Welcome 👋</h1>
+        <h1 className="text-5xl font-semibold text-fg">
+          Connecting potential with possibility
+        </h1>
         <p className="mt-2 text-muted">
-          Edit{' '}
-          <code className="rounded bg-line/60 px-1.5 py-0.5 text-sm">
-            src/pages/Home.tsx
-          </code>{' '}
-          and save.
+          Helping people find opportunities where they can grow and succeed.
         </p>
       </div>
 
