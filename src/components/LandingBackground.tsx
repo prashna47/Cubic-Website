@@ -151,7 +151,7 @@ export default function LandingBackground() {
     let h = 0
     let unit = 0
     const RES = 0.7 // render at ~1/3 size, upscale for free softness
-    const SPEED = 1.5 // global animation-speed multiplier
+    const SPEED = 2 // global animation-speed multiplier
 
     const resize = () => {
       // Fallbacks so a 0-size / detached context can't produce NaN dimensions.
