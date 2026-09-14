@@ -1,6 +1,17 @@
 import { api } from '@/lib/api'
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
+import { SERVICES } from '@/data/services'
+import ServiceCard from '@/components/ServiceCard'
+
+const FEATURED_SLUGS = [
+  'interview-booking',
+  'resume-prompt',
+  'application-tracker',
+]
+const featuredServices = SERVICES.filter((s) => FEATURED_SLUGS.includes(s.slug))
 
 type HealthResponse = { status: string }
 type MeResponse = { user: { id: string; email: string; name: string | null } }
@@ -28,6 +39,24 @@ export default function Home() {
         <p className="mt-2 text-muted">
           Helping people find opportunities where they can grow and succeed.
         </p>
+      </div>
+
+      <div>
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-lg font-semibold text-fg">Services</h2>
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+          >
+            View all
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          {featuredServices.map((service) => (
+            <ServiceCard key={service.slug} service={service} />
+          ))}
+        </div>
       </div>
 
       <div className="rounded-lg border border-line p-4">
