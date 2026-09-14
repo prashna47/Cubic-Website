@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { SERVICES } from '@/data/services'
 import ServiceCard from '@/components/ServiceCard'
+import StatsSection from '@/components/StatsSection'
 
 const FEATURED_SLUGS = [
   'interview-booking',
@@ -39,6 +40,20 @@ export default function Home() {
         <p className="mt-2 text-muted">
           Helping people find opportunities where they can grow and succeed.
         </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            to="/sign-up"
+            className="rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-brand-fg transition-opacity hover:opacity-90"
+          >
+            Get Started
+          </Link>
+          <Link
+            to="/services"
+            className="rounded-md border border-line px-5 py-2.5 text-sm font-medium text-fg transition-colors hover:bg-line/60"
+          >
+            Explore Services
+          </Link>
+        </div>
       </div>
 
       <div>
@@ -103,6 +118,8 @@ export default function Home() {
           </p>
         </SignedIn>
       </div>
+
+      <StatsSection />
     </section>
   )
 }
