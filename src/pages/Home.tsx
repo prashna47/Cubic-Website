@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <div>
       <Reveal>
-        <section className="pt-24 pb-16 sm:pt-32 sm:pb-24">
+        <section className="px-4 pt-24 pb-16 sm:px-0 sm:pt-32 sm:pb-24">
           <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr]">
             <div>
               <h1 className="text-5xl font-semibold text-fg">
