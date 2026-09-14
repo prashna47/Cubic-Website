@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, useNavigate } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/clerk-react'
+import { dark } from '@clerk/themes'
 import type { ReactNode } from 'react'
 import App from '@/App.tsx'
 import { queryClient } from '@/lib/queryClient'
@@ -11,12 +12,35 @@ import './index.css'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
+// Matches the site's dark palette (src/index.css, body.landing tokens) so
+// the UserButton popup, sign-in/sign-up cards, etc. all look native to the
+// site instead of Clerk's default light theme.
+const clerkAppearance = {
+  baseTheme: dark,
+  variables: {
+    colorPrimary: '#a78bfa', // --color-brand
+    colorBackground: '#0b0b0d', // --color-bg
+    colorText: '#f4f4f5', // --color-fg
+    colorTextSecondary: '#a1a1aa', // --color-muted
+    colorInputBackground: '#0b0b0d',
+    colorInputText: '#f4f4f5',
+    colorNeutral: '#f4f4f5',
+    borderRadius: '0.75rem',
+    fontFamily: "'Inter Variable', system-ui, sans-serif",
+  },
+  elements: {
+    card: { border: '1px solid #26262b', boxShadow: 'none' },
+    userButtonPopoverCard: { border: '1px solid #26262b', boxShadow: 'none' },
+  },
+} as const
+
 // ClerkProvider needs React Router's navigate, so it lives inside <BrowserRouter>.
 function ClerkWithRouter({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   return (
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
+      appearance={clerkAppearance}
       routerPush={(to) => navigate(to)}
       routerReplace={(to) => navigate(to, { replace: true })}
       afterSignOutUrl="/"
