@@ -22,18 +22,16 @@ export default function Home() {
         <p className="mt-2 text-muted">
           Helping people find opportunities where they can grow and succeed.
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-8">
           <Link
-            to="/sign-up"
-            className="rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-brand-fg transition-opacity hover:opacity-90"
+            to="/get-started"
+            className="group inline-flex items-center gap-2 rounded-full border-2 border-brand bg-transparent pt-4 pb-3.5 pl-8 pr-7 text-base font-medium text-brand transition-colors hover:bg-brand hover:text-white active:border-violet-500 active:bg-violet-500"
           >
             Get Started
-          </Link>
-          <Link
-            to="/services"
-            className="rounded-md border border-line px-5 py-2.5 text-sm font-medium text-fg transition-colors hover:bg-line/60"
-          >
-            Explore Services
+            <ArrowRight
+              className="h-4 w-4 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+              aria-hidden="true"
+            />
           </Link>
         </div>
       </div>

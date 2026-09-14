@@ -48,7 +48,7 @@ const BLOBS: BlobSpec[] = [
     sqF: 0.013,
     sqP: 0.0,
     rotF: 0.006,
-    alpha: 0.13,
+    alpha: 0.1,
     tint: [255, 255, 255],
   },
   {
@@ -150,8 +150,8 @@ export default function LandingBackground() {
     let w = 0
     let h = 0
     let unit = 0
-    const RES = 0.7 // render at ~1/3 size, upscale for free softness
-    const SPEED = 2 // global animation-speed multiplier
+    const RES = 3// render at ~1/3 size, upscale for free softness
+    const SPEED = 9 // global animation-speed multiplier
 
     const resize = () => {
       // Fallbacks so a 0-size / detached context can't produce NaN dimensions.
