@@ -80,7 +80,7 @@ export default function Home() {
       <div className="min-h-24" aria-hidden="true" />
 
       <Reveal>
-        <section className="pt-8 pb-24 sm:pt-12 sm:pb-32">
+        <section className="px-4 pt-8 pb-24 sm:px-0 sm:pt-12 sm:pb-32">
           <SectionTitle
             eyebrow="What We Offer"
             heading={
