@@ -5,8 +5,10 @@ const REDUCE_MOTION =
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /**
- * Fades + slides its content up once, the first time it scrolls into view.
- * Wrap a whole section: <Reveal><section>...</section></Reveal>
+ * Fades + slides its content up every time it scrolls into view, and back
+ * down when it scrolls out — replays on every pass. The hero (first on the
+ * page) plays immediately since it's already in the viewport at mount;
+ * sections further down wait until the user actually scrolls to them.
  */
 export default function Reveal({
   children,
@@ -16,24 +18,21 @@ export default function Reveal({
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [shown, setShown] = useState(REDUCE_MOTION)
+  const [inView, setInView] = useState(false)
 
   useEffect(() => {
     if (REDUCE_MOTION) return
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShown(true)
-          observer.disconnect() // reveal once, don't re-trigger
-        }
-      },
+      ([entry]) => setInView(entry.isIntersecting),
       { threshold: 0.15 },
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const shown = REDUCE_MOTION || inView
 
   return (
     <div

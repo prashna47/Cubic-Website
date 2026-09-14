@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div>
       <Reveal>
-        <section className="pt-24 pb-16 sm:pt-32 sm:pb-20">
+        <section className="pt-24 pb-48 sm:pt-32 sm:pb-72">
           <h1 className="text-5xl font-semibold text-fg">
             Connecting potential with possibility
           </h1>
@@ -41,7 +41,7 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <section className="py-24 sm:py-32">
+        <section className="pt-56 pb-24 sm:pt-72 sm:pb-32">
           <HowItWorks />
         </section>
       </Reveal>
