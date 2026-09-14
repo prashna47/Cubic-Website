@@ -1,4 +1,5 @@
 import { Target, Trophy, UserPlus, type LucideIcon } from 'lucide-react'
+import SectionTitle from '@/components/SectionTitle'
 
 // Depth (px) of each chevron's point / notch.
 const ARROW = 32
@@ -46,9 +47,17 @@ function chevronClipPath(notchLeft: boolean, pointRight: boolean) {
 
 export default function HowItWorks() {
   return (
-    <section>
-      <h2 className="text-lg font-semibold text-fg">How it works</h2>
-      <div className="mt-4 flex">
+    <div>
+      <SectionTitle
+        eyebrow="How It Works"
+        heading={
+          <>
+            Three simple steps to{' '}
+            <span className="text-brand">your next role</span>
+          </>
+        }
+      />
+      <div className="mt-16 flex">
         {STEPS.map((step, i) => {
           const Icon = step.icon
           const isFirst = i === 0
@@ -87,6 +96,6 @@ export default function HowItWorks() {
           )
         })}
       </div>
-    </section>
+    </div>
   )
 }

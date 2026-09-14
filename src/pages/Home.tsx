@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import HowItWorks from '@/components/HowItWorks'
+import SectionTitle from '@/components/SectionTitle'
 import ServiceCard from '@/components/ServiceCard'
 import StatsSection from '@/components/StatsSection'
 import { SERVICES } from '@/data/services'
@@ -14,16 +15,15 @@ const featuredServices = SERVICES.filter((s) => FEATURED_SLUGS.includes(s.slug))
 
 export default function Home() {
   return (
-    <section className="space-y-6">
-      <div className="mb-30"></div>
-      <div>
+    <div>
+      <section className="py-24 sm:py-32">
         <h1 className="text-5xl font-semibold text-fg">
           Connecting potential with possibility
         </h1>
         <p className="mt-2 text-muted">
           Helping people find opportunities where they can grow and succeed.
         </p>
-        <div className="mt-8">
+        <div className="mt-14">
           <Link
             to="/get-started"
             className="group inline-flex items-center gap-4 rounded-full border-2 border-brand bg-transparent pt-4 pb-3.5 pl-8 pr-7 text-base font-medium text-brand transition-colors hover:border-brand/50 hover:bg-line/10 active:bg-line/20"
@@ -35,13 +35,30 @@ export default function Home() {
             />
           </Link>
         </div>
-      </div>
+      </section>
 
-      <HowItWorks />
+      <section className="py-24 sm:py-32">
+        <HowItWorks />
+      </section>
 
-      <div>
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-lg font-semibold text-fg">Services</h2>
+      <StatsSection />
+
+      <section className="py-24 sm:py-32">
+        <SectionTitle
+          eyebrow="What We Offer"
+          heading={
+            <>
+              Support for <span className="text-brand">every step</span> of your
+              search
+            </>
+          }
+        />
+        <div className="mt-16 grid gap-4 sm:grid-cols-3">
+          {featuredServices.map((service) => (
+            <ServiceCard key={service.slug} service={service} />
+          ))}
+        </div>
+        <div className="mt-6 text-center">
           <Link
             to="/services"
             className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline"
@@ -50,14 +67,7 @@ export default function Home() {
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          {featuredServices.map((service) => (
-            <ServiceCard key={service.slug} service={service} />
-          ))}
-        </div>
-      </div>
-
-      <StatsSection />
-    </section>
+      </section>
+    </div>
   )
 }
