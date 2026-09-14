@@ -57,7 +57,7 @@ export default function HowItWorks() {
           </>
         }
       />
-      <div className="mt-16 flex">
+      <div className="mt-24 flex">
         {STEPS.map((step, i) => {
           const Icon = step.icon
           const isFirst = i === 0
@@ -71,8 +71,8 @@ export default function HowItWorks() {
               }}
               className={
                 step.featured
-                  ? 'flex-1 bg-brand px-10 py-8 text-brand-fg'
-                  : 'flex-1 bg-white/5 px-10 py-8 text-fg'
+                  ? 'flex min-h-[22rem] flex-1 flex-col justify-center bg-brand px-10 py-10 text-brand-fg'
+                  : 'flex min-h-[22rem] flex-1 flex-col justify-center bg-white/5 px-10 py-10 text-fg'
               }
             >
               <Icon
