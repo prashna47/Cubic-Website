@@ -66,7 +66,7 @@ export default function Home() {
                 DATABASE_URL on the server.
               </span>
             )}
-            {me.data && (
+            {me.data?.user && (
               <span className="text-green-600">
                 Authenticated as {me.data.user.email} (DB id {me.data.user.id})
               </span>
