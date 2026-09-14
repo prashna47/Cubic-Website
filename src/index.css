@@ -28,6 +28,10 @@
 
 html {
   color-scheme: light dark;
+  /* Always reserve the scrollbar's space so short pages (e.g. About) don't
+     shift content sideways compared to pages tall enough to scroll. */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 body {
