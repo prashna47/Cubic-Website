@@ -1,5 +1,8 @@
 import { Target, Trophy, UserPlus, type LucideIcon } from 'lucide-react'
 
+// Depth (px) of each chevron's point / notch.
+const ARROW = 32
+
 type Step = {
   title: string
   description: string
@@ -28,20 +31,39 @@ const STEPS: Step[] = [
   },
 ]
 
+/**
+ * A right-pointing chevron: straight left edge unless `notchLeft`, straight
+ * right edge unless `pointRight`. Cards are laid out with a `-ARROW` margin
+ * so each point tucks exactly into the next card's notch.
+ */
+function chevronClipPath(notchLeft: boolean, pointRight: boolean) {
+  const right = pointRight
+    ? `calc(100% - ${ARROW}px) 0, 100% 50%, calc(100% - ${ARROW}px) 100%`
+    : '100% 0, 100% 100%'
+  const leftNotch = notchLeft ? `, ${ARROW}px 50%` : ''
+  return `polygon(0 0, ${right}, 0 100%${leftNotch})`
+}
+
 export default function HowItWorks() {
   return (
     <section>
       <h2 className="text-lg font-semibold text-fg">How it works</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        {STEPS.map((step) => {
+      <div className="mt-4 flex">
+        {STEPS.map((step, i) => {
           const Icon = step.icon
+          const isFirst = i === 0
+          const isLast = i === STEPS.length - 1
           return (
             <div
               key={step.title}
+              style={{
+                clipPath: chevronClipPath(!isFirst, !isLast),
+                marginLeft: isFirst ? 0 : -ARROW,
+              }}
               className={
                 step.featured
-                  ? 'rounded-xl bg-brand p-6 text-brand-fg'
-                  : 'rounded-xl border border-line p-6'
+                  ? 'flex-1 bg-brand px-10 py-8 text-brand-fg'
+                  : 'flex-1 bg-white/5 px-10 py-8 text-fg'
               }
             >
               <Icon
