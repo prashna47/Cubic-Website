@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import HowItWorks from '@/components/HowItWorks'
 import ServiceCard from '@/components/ServiceCard'
 import StatsSection from '@/components/StatsSection'
 import { SERVICES } from '@/data/services'
@@ -25,7 +26,7 @@ export default function Home() {
         <div className="mt-8">
           <Link
             to="/get-started"
-            className="group inline-flex items-center gap-2 rounded-full border-2 border-brand bg-transparent pt-4 pb-3.5 pl-8 pr-7 text-base font-medium text-brand transition-colors hover:bg-brand hover:text-white active:border-violet-500 active:bg-violet-500"
+            className="group inline-flex items-center gap-4 rounded-full border-2 border-brand bg-transparent pt-4 pb-3.5 pl-8 pr-7 text-base font-medium text-brand transition-colors hover:border-brand/50 hover:bg-line/10 active:bg-line/20"
           >
             Get Started
             <ArrowRight
@@ -35,6 +36,8 @@ export default function Home() {
           </Link>
         </div>
       </div>
+
+      <HowItWorks />
 
       <div>
         <div className="flex items-end justify-between gap-4">
