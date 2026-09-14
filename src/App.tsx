@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from '@/components/Layout'
 import ApiAuthBridge from '@/components/ApiAuthBridge'
+import ScrollToTop from '@/components/ScrollToTop'
 import Home from '@/pages/Home'
 import About from '@/pages/About'
 import GetStarted from '@/pages/GetStarted'
@@ -13,6 +14,7 @@ import NotFound from '@/pages/NotFound'
 export default function App() {
   return (
     <>
+      <ScrollToTop />
       <ApiAuthBridge />
       <Routes>
         <Route element={<Layout />}>
