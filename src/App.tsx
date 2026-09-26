@@ -9,6 +9,7 @@ import Services from '@/pages/Services'
 import ServiceDetail from '@/pages/ServiceDetail'
 import JobHiring from '@/pages/JobHiring'
 import DoNotApply from '@/pages/DoNotApply'
+import InterviewBooking from '@/pages/InterviewBooking'
 import Login from '@/pages/Login'
 import SignUpPage from '@/pages/SignUp'
 import NotFound from '@/pages/NotFound'
@@ -25,7 +26,11 @@ export default function App() {
           <Route path="get-started" element={<GetStarted />} />
           <Route path="services" element={<Services />} />
           <Route path="services/job-hiring" element={<JobHiring />} />
-          <Route path="services/do-not-apply" element={<DoNotApply />} />
+          <Route path="services/do-not-apply-list" element={<DoNotApply />} />
+          <Route
+            path="services/interview-booking"
+            element={<InterviewBooking />}
+          />
           <Route path="services/:slug" element={<ServiceDetail />} />
           {/* Clerk components use sub-routes, so match the whole subtree. */}
           <Route path="login/*" element={<Login />} />

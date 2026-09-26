@@ -32,13 +32,16 @@ export default function Home() {
               <div className="mt-24">
                 <Link
                   to="/services"
-                  className="group inline-flex items-center gap-4 rounded-full border-2 border-brand bg-transparent pt-4 pb-3.5 pl-8 pr-7 text-base font-medium text-brand transition-colors hover:border-brand/50 hover:bg-line/10 active:bg-line/20"
+                  className="group inline-flex min-w-[12rem] items-center justify-center rounded-full border-2 border-brand bg-transparent px-8 pt-4 pb-3.5 text-base font-medium text-brand transition-colors hover:border-brand/50 hover:bg-line/10 active:bg-line/20"
                 >
                   Get Started
-                  <ArrowRight
-                    className="h-4 w-4 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+                  {/* Collapsed at rest so the label is centered; opens on hover. */}
+                  <span
+                    className="ml-0 flex w-0 items-center justify-end overflow-hidden opacity-0 transition-all duration-300 group-hover:ml-3 group-hover:w-4 group-hover:opacity-100"
                     aria-hidden="true"
-                  />
+                  >
+                    <ArrowRight className="h-4 w-4 shrink-0" />
+                  </span>
                 </Link>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">

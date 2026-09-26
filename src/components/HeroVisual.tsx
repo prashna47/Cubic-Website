@@ -10,6 +10,8 @@ type Card = {
   title: string
   subtitle: string
   position: string // tailwind position + rotation classes
+  floatMs: number // bob period
+  delayMs: number // negative offset so cards bob out of sync
 }
 
 const CARDS: Card[] = [
@@ -18,18 +20,24 @@ const CARDS: Card[] = [
     title: 'Interview booked',
     subtitle: 'Fri, 10:00 AM',
     position: 'top-2 right-0 rotate-3',
+    floatMs: 7000,
+    delayMs: -1000,
   },
   {
     icon: FileCheck2,
     title: 'Resume matched',
     subtitle: '98% match',
     position: 'top-44 left-0 -rotate-2',
+    floatMs: 9000,
+    delayMs: -4000,
   },
   {
     icon: Trophy,
     title: 'Offer received',
     subtitle: 'Welcome aboard',
     position: 'bottom-2 right-2 rotate-2',
+    floatMs: 8000,
+    delayMs: -6000,
   },
 ]
 
@@ -43,7 +51,11 @@ export default function HeroVisual() {
         return (
           <div
             key={card.title}
-            className={`absolute flex w-52 items-center gap-3 rounded-xl border border-line bg-white/5 p-3.5 shadow-xl backdrop-blur-sm ${card.position}`}
+            className={`absolute flex w-52 items-center gap-3 rounded-xl border border-line bg-white/5 p-3.5 shadow-xl backdrop-blur-sm motion-safe:animate-float ${card.position}`}
+            style={{
+              animationDuration: `${card.floatMs}ms`,
+              animationDelay: `${card.delayMs}ms`,
+            }}
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-brand">
               <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />

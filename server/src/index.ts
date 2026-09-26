@@ -3,6 +3,7 @@ import cors from 'cors'
 import { clerkMiddleware } from '@clerk/express'
 import { env, webhookEnabled } from './env.js'
 import { usersRouter } from './routes/users.js'
+import { interviewsRouter } from './routes/interviews.js'
 import { jobsRouter } from './routes/jobs.js'
 import { webhooksRouter } from './routes/webhooks.js'
 
@@ -13,7 +14,10 @@ app.use(cors({ origin: env.CLIENT_URL }))
 // Webhooks need the raw body, so mount them before express.json().
 app.use('/api/webhooks', webhooksRouter)
 
-app.use(express.json())
+// Interview requests carry a resume, so they get their own body limit (see route).
+app.use((req, res, next) =>
+  req.path === '/api/interview-requests' ? next() : express.json()(req, res, next),
+)
 
 // Reads the Clerk session from the request (Authorization header / cookie).
 app.use(clerkMiddleware())
@@ -24,6 +28,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api', usersRouter)
 app.use('/api', jobsRouter)
+app.use('/api', interviewsRouter)
 
 // Fallback 404 for unknown API routes.
 app.use('/api', (_req, res) => {

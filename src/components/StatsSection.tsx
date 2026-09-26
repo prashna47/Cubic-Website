@@ -67,21 +67,23 @@ function StatItem({ stat, index }: { stat: Stat; index: number }) {
   const value = useCountUp(stat.value, inView)
 
   return (
-    <div
-      ref={ref}
-      className="text-center transition-all ease-out"
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(16px)',
-        transitionDuration: '600ms',
-        transitionDelay: inView ? `${index * 80}ms` : '0ms',
-      }}
-    >
-      <div className="text-4xl font-semibold tabular-nums text-fg sm:text-5xl">
-        {value.toLocaleString()}
-        {stat.suffix}
+    // Observe the stationary wrapper, not the element that is translated.
+    <div ref={ref}>
+      <div
+        className="text-center transition-all ease-out"
+        style={{
+          opacity: inView ? 1 : 0,
+          transform: inView ? 'translateY(0)' : 'translateY(16px)',
+          transitionDuration: '600ms',
+          transitionDelay: inView ? `${index * 80}ms` : '0ms',
+        }}
+      >
+        <div className="text-4xl font-semibold tabular-nums text-fg sm:text-5xl">
+          {value.toLocaleString()}
+          {stat.suffix}
+        </div>
+        <div className="mt-2 text-sm text-muted">{stat.label}</div>
       </div>
-      <div className="mt-2 text-sm text-muted">{stat.label}</div>
     </div>
   )
 }

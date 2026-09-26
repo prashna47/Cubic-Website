@@ -34,14 +34,18 @@ export default function Reveal({
 
   const shown = REDUCE_MOTION || inView
 
+  // The observed wrapper never moves; only the inner element is translated.
+  // Observing the moving element itself makes its intersection ratio change
+  // as it animates, which re-triggers the observer and flickers at the edge.
   return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-out ${
-        shown ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-      } ${className}`}
-    >
-      {children}
+    <div ref={ref} className={className}>
+      <div
+        className={`transition-all duration-700 ease-out ${
+          shown ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+        }`}
+      >
+        {children}
+      </div>
     </div>
   )
 }

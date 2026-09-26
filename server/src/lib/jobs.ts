@@ -1,3 +1,4 @@
+import { getTable } from './sheet.js'
 import { env } from '../env.js'
 
 export type Job = {
@@ -9,15 +10,7 @@ export type Job = {
   dateAdded: string | null
 }
 
-export class SheetAccessError extends Error {}
-
 // ---------------------------------------------------------------- sheet
-
-const SHEET_TTL_MS = 60_000
-const tableCache = new Map<
-  string,
-  { at: number; rows?: string[][]; inflight?: Promise<string[][]> }
->()
 
 type SheetRow = {
   url: string
@@ -27,71 +20,8 @@ type SheetRow = {
   site: string
 }
 
-/** Minimal RFC-4180 CSV parser (quoted fields, escaped quotes, newlines). */
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let quoted = false
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i]
-    if (quoted) {
-      if (c === '"' && text[i + 1] === '"') {
-        field += '"'
-        i++
-      } else if (c === '"') quoted = false
-      else field += c
-    } else if (c === '"') quoted = true
-    else if (c === ',') {
-      row.push(field)
-      field = ''
-    } else if (c === '\n' || c === '\r') {
-      if (c === '\r' && text[i + 1] === '\n') i++
-      row.push(field)
-      rows.push(row)
-      row = []
-      field = ''
-    } else field += c
-  }
-  if (field !== '' || row.length) {
-    row.push(field)
-    rows.push(row)
-  }
-  return rows
-}
-
-async function fetchTable(gid: string): Promise<string[][]> {
-  const url = `https://docs.google.com/spreadsheets/d/${env.JOBS_SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`
-  const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
-  const type = res.headers.get('content-type') ?? ''
-  if (!res.ok || !type.includes('csv')) {
-    throw new SheetAccessError(
-      'Cannot read the Google Sheet. Share it as "Anyone with the link can view".',
-    )
-  }
-  return parseCsv(await res.text()).filter((r) => r.some((cell) => cell.trim()))
-}
-
-/** One tab of the sheet as rows of cells (header row included), cached briefly. */
-async function getTable(gid: string): Promise<string[][]> {
-  const hit = tableCache.get(gid)
-  if (hit?.rows && Date.now() - hit.at < SHEET_TTL_MS) return hit.rows
-  if (hit?.inflight) return hit.inflight
-  const inflight = fetchTable(gid)
-    .then((rows) => {
-      tableCache.set(gid, { at: Date.now(), rows })
-      return rows
-    })
-    .catch((err) => {
-      tableCache.delete(gid)
-      throw err
-    })
-  tableCache.set(gid, { at: hit?.at ?? 0, rows: hit?.rows, inflight })
-  return inflight
-}
-
-async function getSheetRows(): Promise<SheetRow[]> {
-  const table = await getTable(env.JOBS_SHEET_GID)
+async function getSheetRows(fresh: boolean): Promise<SheetRow[]> {
+  const table = await getTable(env.JOBS_SHEET_GID, fresh)
 
   // Columns are found by header name so extra/reordered columns are fine.
   // With no header row, column A is the link and column B the date.
@@ -125,8 +55,8 @@ async function getSheetRows(): Promise<SheetRow[]> {
 export type BlockedCompany = { company: string; reason: string }
 
 /** The "Do not apply list" tab: Company + Reason columns. */
-export async function getDoNotApply(): Promise<BlockedCompany[]> {
-  const table = await getTable(env.BLOCKLIST_SHEET_GID)
+export async function getDoNotApply(fresh = false): Promise<BlockedCompany[]> {
+  const table = await getTable(env.BLOCKLIST_SHEET_GID, fresh)
   const header = table[0]?.map((h) => h.trim().toLowerCase()) ?? []
   const hasHeader = header.some((h) => h.includes('company'))
   const col = (name: string, fallback: number) => {
@@ -367,8 +297,8 @@ async function mapLimit<T, R>(items: T[], limit: number, fn: (t: T) => Promise<R
 
 // --------------------------------------------------------------- public
 
-export async function getJobs(): Promise<Job[]> {
-  const rows = await getSheetRows()
+export async function getJobs(fresh = false): Promise<Job[]> {
+  const rows = await getSheetRows(fresh)
   const jobs = await mapLimit(rows, 8, async (row): Promise<Job> => {
     // Values typed into the sheet always win over what we scraped.
     const needsLookup = !(row.company && row.title && row.site)

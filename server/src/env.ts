@@ -13,6 +13,13 @@ const schema = z.object({
   JOBS_SHEET_ID: z.string().default('1sR3SRYNhqqJYTBfm82ESHS3hvPyWFBHxb_HKKhwFsa8'),
   JOBS_SHEET_GID: z.string().default('0'),
   BLOCKLIST_SHEET_GID: z.string().default('1401399086'),
+  // Looked up by name because the approval script creates this tab itself. Google
+  // serves the first tab if the name is missing; the header check below covers that.
+  INTERVIEWS_SHEET_NAME: z.string().default('Interview Booking'),
+  CANDIDATES_SHEET_GID: z.string().default('1628186362'),
+  // Apps Script web app that appends booking requests to the "Booking Requests" tab.
+  BOOKING_WEBHOOK_URL: z.string().default(''),
+  BOOKING_WEBHOOK_TOKEN: z.string().default(''),
 })
 
 const parsed = schema.safeParse(process.env)

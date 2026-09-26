@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import LandingBackground from '@/components/LandingBackground'
 import ProfileMenu from '@/components/ProfileMenu'
 
@@ -40,9 +40,9 @@ export default function Layout() {
       <LandingBackground />
       <header className="border-b border-line">
         <nav className="mx-auto flex max-w-5xl items-center gap-2 px-2 py-3">
-          <span className="mr-auto font-semibold text-fg">
+          <Link to="/" className="mr-auto font-semibold text-fg">
             CUBIC&nbsp;ALPHA&nbsp;TEAM
-          </span>
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden items-center gap-2 sm:flex">

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ArrowUpRight, Briefcase, RefreshCw, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { api } from '@/lib/api'
+import { useSheetRefresh } from '@/lib/useSheetRefresh'
 
 type Job = {
   url: string
@@ -76,7 +77,7 @@ export default function JobHiring() {
   const [range, setRange] = useState<(typeof RANGES)[number]['key']>('5d')
   const [query, setQuery] = useState('')
 
-  const { data, error, isLoading, isFetching, refetch } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => (await api.get<JobsResponse>('/jobs')).data,
     refetchInterval: 60_000,
@@ -84,6 +85,8 @@ export default function JobHiring() {
   })
 
   const days = RANGES.find((r) => r.key === range)!.days
+  const { refresh, spinning, refreshCount } = useSheetRefresh('jobs', '/jobs')
+
   const groups = useMemo(() => {
     const cutoff =
       days === null ? null : startOfDay(new Date()).getTime() - (days - 1) * 86_400_000
@@ -166,72 +169,81 @@ export default function JobHiring() {
             </span>
           )}
           <button
-            onClick={() => refetch()}
+            onClick={refresh}
             aria-label="Refresh jobs"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-line transition-colors hover:bg-line/60 hover:text-fg"
           >
             <RefreshCw
-              className={['h-4 w-4', isFetching ? 'animate-spin' : ''].join(' ')}
+              className={['h-4 w-4', spinning ? 'animate-spin' : ''].join(' ')}
               aria-hidden="true"
             />
           </button>
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-2" aria-busy="true">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-white/5" />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="rounded-xl border border-line p-8 text-center">
-          <p className="font-medium text-fg">
-            {sheetPrivate ? "Can't read the job sheet" : "Couldn't load jobs"}
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            {sheetPrivate
-              ? 'Set the Google Sheet to “Anyone with the link can view”, then refresh.'
-              : 'Something went wrong. Please try again in a moment.'}
-          </p>
-        </div>
-      ) : groups.total === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-line p-12 text-center">
-          <Briefcase className="h-8 w-8 text-brand" strokeWidth={1.5} aria-hidden="true" />
-          <p className="font-medium text-fg">No jobs to show</p>
-          <p className="text-sm text-muted">
-            {query
-              ? 'Nothing matches your search.'
-              : range === '5d'
-                ? 'No links added in the last 5 days. Try “All”.'
-                : 'New openings will appear here.'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {groups.entries.map(([label, jobs]) => (
-            <section key={label}>
-              <h2 className="mb-3 text-xs font-semibold tracking-wider text-muted uppercase">
-                {label}
-                <span className="ml-2 font-normal">{jobs.length}</span>
-              </h2>
-              <div className="overflow-hidden rounded-xl border border-line bg-white/[0.02]">
-                <div className="hidden grid-cols-[1.2fr_2fr_0.8fr_auto] gap-6 border-b border-line px-5 py-3 text-xs font-semibold tracking-wider text-muted uppercase sm:grid">
-                  <span>Company</span>
-                  <span>Job title</span>
-                  <span>Job site</span>
-                  <span className="w-[5.5rem] text-right">Link</span>
+      {/* Dims while refreshing, then replays its entrance (new key). */}
+      <div
+        key={refreshCount}
+        className={[
+          'transition-[opacity,filter] duration-300',
+          spinning ? 'opacity-40 blur-[1px]' : 'motion-safe:animate-list-in',
+        ].join(' ')}
+      >
+        {isLoading ? (
+          <div className="space-y-2" aria-busy="true">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-16 animate-pulse rounded-xl bg-white/5" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="rounded-xl border border-line p-8 text-center">
+            <p className="font-medium text-fg">
+              {sheetPrivate ? "Can't read the job sheet" : "Couldn't load jobs"}
+            </p>
+            <p className="mt-2 text-sm text-muted">
+              {sheetPrivate
+                ? 'Set the Google Sheet to “Anyone with the link can view”, then refresh.'
+                : 'Something went wrong. Please try again in a moment.'}
+            </p>
+          </div>
+        ) : groups.total === 0 ? (
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-line p-12 text-center">
+            <Briefcase className="h-8 w-8 text-brand" strokeWidth={1.5} aria-hidden="true" />
+            <p className="font-medium text-fg">No jobs to show</p>
+            <p className="text-sm text-muted">
+              {query
+                ? 'Nothing matches your search.'
+                : range === '5d'
+                  ? 'No links added in the last 5 days. Try “All”.'
+                  : 'New openings will appear here.'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {groups.entries.map(([label, jobs]) => (
+              <section key={label}>
+                <h2 className="mb-3 text-xs font-semibold tracking-wider text-muted uppercase">
+                  {label}
+                  <span className="ml-2 font-normal">{jobs.length}</span>
+                </h2>
+                <div className="overflow-hidden rounded-xl border border-line bg-white/[0.02]">
+                  <div className="hidden grid-cols-[1.2fr_2fr_0.8fr_auto] gap-6 border-b border-line px-5 py-3 text-xs font-semibold tracking-wider text-muted uppercase sm:grid">
+                    <span>Company</span>
+                    <span>Job title</span>
+                    <span>Job site</span>
+                    <span className="w-[5.5rem] text-right">Link</span>
+                  </div>
+                  <ul className="divide-y divide-line">
+                    {jobs.map((job) => (
+                      <JobRow key={job.url} job={job} />
+                    ))}
+                  </ul>
                 </div>
-                <ul className="divide-y divide-line">
-                  {jobs.map((job) => (
-                    <JobRow key={job.url} job={job} />
-                  ))}
-                </ul>
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
