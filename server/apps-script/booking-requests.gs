@@ -42,6 +42,8 @@ var STATUSES = {
 // Headers are checked from the start of the text, so e.g. "Candidate Number"
 // is not mistaken for the candidate's name.
 var INTERVIEW_COLUMNS = [
+  { pattern: /^submitted/i, from: 'Submitted At' },
+  { pattern: /^status/i, from: 'Status' },
   { pattern: /^date/i, from: 'Date' },
   { pattern: /^time/i, from: 'Time' },
   { pattern: /^candidate[_ ]?name|^candidate$/i, from: 'Candidate' },
@@ -92,8 +94,8 @@ function doPost(e) {
 
 /** Run once from the editor. Safe to run again. */
 function setupBookingRequests() {
-  var sheet = requestsSheet();
-  styleStatusColumn(sheet);
+  styleStatusColumn(requestsSheet());
+  styleStatusColumn(interviewSheet()); // creates the tab if it is missing
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var exists = ScriptApp.getProjectTriggers().some(function (t) {
@@ -105,7 +107,8 @@ function setupBookingRequests() {
   }
 }
 
-/** Status dropdown (Pending / Approved / Rejected) with yellow, green, red. */
+/** Status dropdown (Pending / Approved / Rejected) with yellow, green, red.
+ *  Used on both the Booking Requests and Interview Booking tabs. */
 function styleStatusColumn(sheet) {
   var col = columnOf(sheet, 'Status');
   if (col < 0) return;
@@ -119,7 +122,11 @@ function styleStatusColumn(sheet) {
       .setAllowInvalid(false)
       .build()
   );
-  var rules = Object.keys(STATUSES).map(function (name) {
+  // Keep the sheet's other formatting rules; replace only our own status ones.
+  var kept = sheet.getConditionalFormatRules().filter(function (rule) {
+    return !isStatusRule(rule, col);
+  });
+  var ours = Object.keys(STATUSES).map(function (name) {
     return SpreadsheetApp.newConditionalFormatRule()
       .whenTextEqualTo(name)
       .setBackground(STATUSES[name].bg)
@@ -127,7 +134,14 @@ function styleStatusColumn(sheet) {
       .setRanges([range])
       .build();
   });
-  sheet.setConditionalFormatRules(rules);
+  sheet.setConditionalFormatRules(kept.concat(ours));
+}
+
+function isStatusRule(rule, col) {
+  var cond = rule.getBooleanCondition();
+  if (!cond || cond.getCriteriaType() !== SpreadsheetApp.BooleanCriteria.TEXT_EQUAL_TO) return false;
+  if (!STATUSES.hasOwnProperty(String(cond.getCriteriaValues()[0]))) return false;
+  return rule.getRanges().every(function (r) { return r.getColumn() === col; });
 }
 
 // ---------------------------------------------------------------- approval
@@ -220,6 +234,7 @@ function addInterview(request) {
     return '';
   });
   sheet.appendRow(row);
+  styleStatusColumn(sheet); // dropdown + colors for the Status column, if it has one
 }
 
 function removeInterview(request) {

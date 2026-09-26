@@ -16,6 +16,7 @@ const schema = z.object({
   // Looked up by name because the approval script creates this tab itself. Google
   // serves the first tab if the name is missing; the header check below covers that.
   INTERVIEWS_SHEET_NAME: z.string().default('Interview Booking'),
+  REQUESTS_SHEET_NAME: z.string().default('Booking Requests'),
   CANDIDATES_SHEET_GID: z.string().default('1628186362'),
   // Apps Script web app that appends booking requests to the "Booking Requests" tab.
   BOOKING_WEBHOOK_URL: z.string().default(''),

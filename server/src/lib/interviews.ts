@@ -87,20 +87,61 @@ function toMinutes(raw: string): number | null {
   return h * 60 + Number(m[2] ?? 0)
 }
 
-/** How many interviews the sheet already holds per "yyyy-mm-dd|hour". */
+/** Whole-word header match: "date" must not match "Candidate" or "Updated". */
+const word = (w: string) => (h: string) =>
+  new RegExp(`(^|[^a-z])${w}($|[^a-z])`).test(h)
+
+/**
+ * Seats already taken per "yyyy-mm-dd|hour". Two sources, counted once each:
+ *  - the Interview Booking tab (confirmed interviews), and
+ *  - Booking Requests rows whose Status is Approved, so approving a request
+ *    takes its seat right away even before it is copied over.
+ */
 async function bookedByHour(fresh: boolean) {
-  const table = await getTable({ name: env.INTERVIEWS_SHEET_NAME }, fresh)
-  const header = table[0]?.map((h) => h.trim().toLowerCase()) ?? []
-  const dateCol = header.findIndex((h) => h.includes('date'))
-  const timeCol = header.findIndex((h) => h.includes('time'))
   const counts = new Map<string, number>()
-  if (dateCol < 0 || timeCol < 0) return counts
-  for (const row of table.slice(1)) {
-    const day = toDay((row[dateCol] ?? '').trim())
-    const mins = toMinutes(row[timeCol] ?? '')
-    if (!day || mins === null) continue
+  const seen = new Set<string>() // candidate|day|minutes, to avoid double counts
+  const add = (day: string | null, mins: number | null) => {
+    if (!day || mins === null) return
     const key = `${day}|${Math.floor(mins / 60)}`
     counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+
+  const interviews = await getTable({ name: env.INTERVIEWS_SHEET_NAME }, fresh)
+  const ih = interviews[0]?.map((h) => h.trim().toLowerCase()) ?? []
+  const idate = ih.findIndex(word('date'))
+  const itime = ih.findIndex(word('time'))
+  const iname = ih.findIndex((h) => /^candidate([_ ]?name)?$/.test(h))
+  const istatus = ih.findIndex(word('status'))
+  if (idate >= 0 && itime >= 0) {
+    for (const row of interviews.slice(1)) {
+      const day = toDay((row[idate] ?? '').trim())
+      const mins = toMinutes(row[itime] ?? '')
+      if (!day || mins === null) continue
+      // Blank means confirmed; Pending/Rejected rows don't hold a seat.
+      const status = (row[istatus] ?? '').trim().toLowerCase()
+      if (istatus >= 0 && status && status !== 'approved') continue
+      if (iname >= 0 && row[iname]?.trim()) {
+        seen.add(`${row[iname].trim().toLowerCase()}|${day}|${mins}`)
+      }
+      add(day, mins)
+    }
+  }
+
+  const requests = await getTable({ name: env.REQUESTS_SHEET_NAME }, fresh)
+  const rh = requests[0]?.map((h) => h.trim().toLowerCase()) ?? []
+  const rstatus = rh.findIndex(word('status'))
+  const rdate = rh.findIndex(word('date'))
+  const rtime = rh.findIndex(word('time'))
+  const rname = rh.findIndex((h) => /^candidate([_ ]?name)?$/.test(h))
+  if (rstatus >= 0 && rdate >= 0 && rtime >= 0) {
+    for (const row of requests.slice(1)) {
+      if ((row[rstatus] ?? '').trim().toLowerCase() !== 'approved') continue
+      const day = toDay((row[rdate] ?? '').trim())
+      const mins = toMinutes(row[rtime] ?? '')
+      if (!day || mins === null) continue
+      const key = `${(row[rname] ?? '').trim().toLowerCase()}|${day}|${mins}`
+      if (!seen.has(key)) add(day, mins)
+    }
   }
   return counts
 }

@@ -33,7 +33,7 @@ async function getSheetRows(fresh: boolean): Promise<SheetRow[]> {
     const link = has('link') >= 0 ? has('link') : has('url')
     idx = {
       url: link,
-      date: has('date'),
+      date: header.findIndex((h) => /(^|[^a-z])date($|[^a-z])/.test(h)),
       company: has('company'),
       title: has('title'),
       site: has('site'),
