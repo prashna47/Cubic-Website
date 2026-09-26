@@ -3,6 +3,7 @@ import cors from 'cors'
 import { clerkMiddleware } from '@clerk/express'
 import { env, webhookEnabled } from './env.js'
 import { usersRouter } from './routes/users.js'
+import { jobsRouter } from './routes/jobs.js'
 import { webhooksRouter } from './routes/webhooks.js'
 
 const app = express()
@@ -22,6 +23,7 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api', usersRouter)
+app.use('/api', jobsRouter)
 
 // Fallback 404 for unknown API routes.
 app.use('/api', (_req, res) => {

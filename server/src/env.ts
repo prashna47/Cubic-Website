@@ -9,6 +9,10 @@ const schema = z.object({
   CLERK_WEBHOOK_SIGNING_SECRET: z.string().optional().default(''),
   PORT: z.coerce.number().default(4000),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
+  // Google Sheet holding the job links (must be shared as "anyone with the link can view").
+  JOBS_SHEET_ID: z.string().default('1sR3SRYNhqqJYTBfm82ESHS3hvPyWFBHxb_HKKhwFsa8'),
+  JOBS_SHEET_GID: z.string().default('0'),
+  BLOCKLIST_SHEET_GID: z.string().default('1401399086'),
 })
 
 const parsed = schema.safeParse(process.env)
