@@ -9,7 +9,7 @@
   --color-fg: #08060d;
   --color-muted: #6b6375;
   --color-line: #e5e4e7;
-  --color-brand: #6d28d9;
+  --color-brand: #1d4ed8;
   --color-brand-fg: #ffffff;
 
   --font-sans: 'Inter Variable', system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -45,8 +45,8 @@
     --color-fg: #f3f4f6;
     --color-muted: #9ca3af;
     --color-line: #2e303a;
-    --color-brand: #a78bfa;
-    --color-brand-fg: #0b0b0f;
+    --color-brand: #3b82f6;
+    --color-brand-fg: #ffffff;
   }
 }
 
@@ -77,8 +77,8 @@ body.landing {
   --color-fg: #f4f4f5;
   --color-muted: #a1a1aa;
   --color-line: #26262b;
-  --color-brand: #a78bfa;
-  --color-brand-fg: #0b0b0f;
+  --color-brand: #3b82f6;
+  --color-brand-fg: #ffffff;
 
   background: #000;
 }

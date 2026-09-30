@@ -18,7 +18,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 const clerkAppearance = {
   baseTheme: dark,
   variables: {
-    colorPrimary: '#a78bfa', // --color-brand
+    colorPrimary: '#3b82f6', // --color-brand
     colorBackground: '#0b0b0d', // --color-bg
     colorText: '#f4f4f5', // --color-fg
     colorTextSecondary: '#a1a1aa', // --color-muted
