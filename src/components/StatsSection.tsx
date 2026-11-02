@@ -93,7 +93,7 @@ export default function StatsSection() {
     <section className="border-t border-line py-16">
       <p className="text-center text-lg font-medium text-fg">
         Join thousands of candidates who've grown their careers with{' '}
-        <span className="text-brand">Cubic</span>.
+        <span className="text-brand">Cubic Alpha</span>.
       </p>
       <div className="mt-12 grid grid-cols-2 gap-y-10 sm:grid-cols-4">
         {STATS.map((stat, i) => (

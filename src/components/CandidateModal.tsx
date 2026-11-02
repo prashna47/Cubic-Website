@@ -47,7 +47,7 @@ export default function CandidateModal({
             <h2 id="candidate-title" className="text-lg font-semibold text-fg">
               {candidate.fullName}
             </h2>
-            <p className="mt-1 text-sm text-muted">Candidate tracker</p>
+            <p className="mt-1 text-sm text-muted">Candidate profile</p>
           </div>
           <button
             onClick={onClose}
@@ -70,11 +70,6 @@ export default function CandidateModal({
           </div>
         </div>
 
-        <div className="border-t border-line px-6 py-4">
-          <p className="text-center text-sm text-muted">
-            The full tracker view is coming soon.
-          </p>
-        </div>
       </div>
     </div>
   )

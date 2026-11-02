@@ -137,7 +137,7 @@ export default function FeedbackForm() {
           Anonymous Feedback and Suggestions
         </h1>
         <p className="mt-2 text-muted">
-          Share your experience with Cubic's interview and job-placement
+          Share your experience with Cubic Alpha's interview and job-placement
           support. This helps us improve communication, interview
           preparation, response time, and workflows.
         </p>
@@ -170,7 +170,7 @@ export default function FeedbackForm() {
           <RatingInput value={responsivenessRating} onChange={setResponsivenessRating} />
         </Field>
 
-        <Field label="Any suggestions for improving Cubic's interview support?">
+        <Field label="Any suggestions for improving Cubic Alpha's interview support?">
           <TextArea
             value={supportSuggestions}
             onChange={(e) => setSupportSuggestions(e.target.value)}
@@ -207,7 +207,7 @@ export default function FeedbackForm() {
           </div>
         </Field>
 
-        <Field label="Any other suggestions for the Cubic team?">
+        <Field label="Any other suggestions for the Cubic Alpha team?">
           <TextArea
             value={otherSuggestions}
             onChange={(e) => setOtherSuggestions(e.target.value)}

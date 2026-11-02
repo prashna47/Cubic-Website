@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from '@/components/Layout'
 import ApiAuthBridge from '@/components/ApiAuthBridge'
 import ScrollToTop from '@/components/ScrollToTop'
@@ -34,8 +34,12 @@ export default function App() {
             element={<InterviewBooking />}
           />
           <Route
-            path="services/application-tracker"
+            path="services/candidate-directory"
             element={<ApplicationTracker />}
+          />
+          <Route
+            path="services/application-tracker"
+            element={<Navigate to="/services/candidate-directory" replace />}
           />
           <Route path="services/resume-prompt" element={<ResumePrompt />} />
           <Route path="services/onboarding-list" element={<OnboardingList />} />

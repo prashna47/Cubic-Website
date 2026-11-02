@@ -41,7 +41,7 @@ export default function Layout() {
       <header className="border-b border-line">
         <nav className="mx-auto flex max-w-5xl items-center gap-2 px-2 py-3">
           <Link to="/" className="mr-auto font-semibold text-fg">
-            CUBIC&nbsp;ALPHA&nbsp;TEAM
+            CUBIC&nbsp;ALPHA
           </Link>
 
           {/* Desktop nav */}
@@ -96,7 +96,7 @@ export default function Layout() {
 
       <footer className="border-t border-line">
         <div className="mx-auto max-w-5xl px-2 py-6 text-sm text-muted">
-          Built with React + Vite &middot; {new Date().getFullYear()}
+          &copy; {new Date().getFullYear()} Cubic Alpha. All rights reserved.
         </div>
       </footer>
     </div>

@@ -65,15 +65,17 @@ export async function getDoNotApply(fresh = false): Promise<BlockedCompany[]> {
   }
   const c = col('company', 0)
   const r = col('reason', 1)
-  return (hasHeader ? table.slice(1) : table)
-    .map((row) => ({
-      company: (row[c] ?? '').trim(),
-      reason: (row[r] ?? '').trim(),
-    }))
-    // A company with no reason isn't shown — a half-filled row usually means
-    // it's still being written, not that it's ready to publish.
-    .filter((row) => row.company && row.reason)
-    .sort((a, b) => a.company.localeCompare(b.company))
+  return (
+    (hasHeader ? table.slice(1) : table)
+      .map((row) => ({
+        company: (row[c] ?? '').trim(),
+        reason: (row[r] ?? '').trim(),
+      }))
+      // A company with no reason isn't shown — a half-filled row usually means
+      // it's still being written, not that it's ready to publish.
+      .filter((row) => row.company && row.reason)
+      .sort((a, b) => a.company.localeCompare(b.company))
+  )
 }
 
 function parseDate(raw: string): string | null {
@@ -145,8 +147,31 @@ function companyFromUrl(u: URL): string {
     const board = u.pathname.match(/\/job-board\/([^/]+)/)?.[1]
     return board ? prettifySlug(board) : ''
   }
-  const sub = host.match(/^([^.]+)\.(myworkdayjobs|bamboohr|jobvite)\.com$/)
+  const sub = host.match(
+    /^([^.]+)\.(?:wd\d+\.)?(myworkdayjobs|bamboohr|jobvite)\.com$/,
+  )
   return sub ? prettifySlug(sub[1]) : ''
+}
+
+/** Workday includes a readable role slug even when its page needs JavaScript. */
+function titleFromUrl(u: URL): string {
+  if (!/(^|\.)myworkdayjobs\.com$/.test(u.hostname)) return ''
+  const slug = u.pathname.split('/').filter(Boolean).at(-1) ?? ''
+  return prettifySlug(slug.replace(/_[^_]+$/, ''))
+}
+
+/** Keep job identifiers; discard only known advertising/referral parameters. */
+function jobKey(raw: string): string {
+  const u = new URL(raw)
+  u.hash = ''
+  for (const key of [...u.searchParams.keys()]) {
+    if (/^utm_|^(source|ref|referral|gh_src|trk|trackingId)$/i.test(key)) {
+      u.searchParams.delete(key)
+    }
+  }
+  u.searchParams.sort()
+  u.pathname = u.pathname.replace(/\/+$/, '')
+  return u.toString()
 }
 
 function decodeEntities(s: string) {
@@ -182,7 +207,10 @@ function findJobPosting(node: unknown): Record<string, unknown> | null {
   } else if (node && typeof node === 'object') {
     const obj = node as Record<string, unknown>
     const type = obj['@type']
-    if (type === 'JobPosting' || (Array.isArray(type) && type.includes('JobPosting'))) {
+    if (
+      type === 'JobPosting' ||
+      (Array.isArray(type) && type.includes('JobPosting'))
+    ) {
       return obj
     }
     return findJobPosting(obj['@graph'])
@@ -199,11 +227,16 @@ function jsonLdJob(html: string): { title: string; company: string } {
       const json = JSON.parse(block.replace(/^<script[^>]*>|<\/script>$/gi, ''))
       const job = findJobPosting(json)
       if (!job) continue
-      const org = job.hiringOrganization as { name?: string } | string | undefined
+      const org = job.hiringOrganization as
+        { name?: string } | string | undefined
       return {
         title: typeof job.title === 'string' ? decodeEntities(job.title) : '',
         company:
-          typeof org === 'string' ? org : org?.name ? decodeEntities(org.name) : '',
+          typeof org === 'string'
+            ? org
+            : org?.name
+              ? decodeEntities(org.name)
+              : '',
       }
     } catch {
       // ignore malformed JSON-LD
@@ -224,7 +257,9 @@ function splitTitle(raw: string): { title: string; company: string } {
 function isPrivateHost(host: string) {
   return (
     host === 'localhost' ||
-    /^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|0\.)/.test(host) ||
+    /^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|0\.)/.test(
+      host,
+    ) ||
     host === '[::1]'
   )
 }
@@ -234,7 +269,7 @@ async function fetchMeta(rawUrl: string): Promise<{ meta: Meta; ok: boolean }> {
   const meta: Meta = {
     site: siteFromUrl(u),
     company: companyFromUrl(u),
-    title: '',
+    title: titleFromUrl(u),
   }
   if (isPrivateHost(u.hostname)) return { meta, ok: false }
   try {
@@ -258,7 +293,7 @@ async function fetchMeta(rawUrl: string): Promise<{ meta: Meta; ok: boolean }> {
     )
     const split = splitTitle(ld.title || pageTitle)
 
-    meta.title = ld.title || split.title
+    meta.title = ld.title || meta.title || split.title
     meta.company =
       ld.company ||
       meta.company ||
@@ -283,7 +318,11 @@ async function getMeta(url: string): Promise<Meta> {
 }
 
 /** Runs `fn` over `items` with at most `limit` in flight. */
-async function mapLimit<T, R>(items: T[], limit: number, fn: (t: T) => Promise<R>) {
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (t: T) => Promise<R>,
+) {
   const out: R[] = new Array(items.length)
   let next = 0
   await Promise.all(
@@ -301,20 +340,49 @@ async function mapLimit<T, R>(items: T[], limit: number, fn: (t: T) => Promise<R
 
 export async function getJobs(fresh = false): Promise<Job[]> {
   const rows = await getSheetRows(fresh)
-  const jobs = await mapLimit(rows, 8, async (row): Promise<Job> => {
-    // Values typed into the sheet always win over what we scraped.
-    const needsLookup = !(row.company && row.title && row.site)
-    const meta = needsLookup
-      ? await getMeta(row.url)
-      : { company: '', title: '', site: '' }
-    return {
-      url: row.url,
-      company: row.company || meta.company || '—',
-      title: row.title || meta.title || 'Job posting',
-      site: row.site || meta.site,
-      dateAdded: parseDate(row.date),
+  const unique = new Map<string, SheetRow>()
+  for (const row of rows) {
+    let key: string
+    try {
+      key = jobKey(row.url)
+    } catch {
+      continue
     }
-  })
+    const previous = unique.get(key)
+    if (!previous) {
+      unique.set(key, row)
+      continue
+    }
+    const newer = (parseDate(row.date) ?? '') > (parseDate(previous.date) ?? '')
+    const preferred = newer ? row : previous
+    const fallback = newer ? previous : row
+    unique.set(key, {
+      ...preferred,
+      company: preferred.company || fallback.company,
+      title: preferred.title || fallback.title,
+      site: preferred.site || fallback.site,
+    })
+  }
+  const jobs = await mapLimit(
+    [...unique.values()],
+    8,
+    async (row): Promise<Job> => {
+      // Values typed into the sheet always win over what we scraped.
+      const needsLookup = !(row.company && row.title && row.site)
+      const meta = needsLookup
+        ? await getMeta(row.url)
+        : { company: '', title: '', site: '' }
+      return {
+        url: row.url,
+        company: row.company || meta.company || '—',
+        title: row.title || meta.title || 'Job posting',
+        site: row.site || meta.site,
+        dateAdded: parseDate(row.date),
+      }
+    },
+  )
   // Newest first; rows without a date sink to the bottom.
-  return jobs.sort((a, b) => (b.dateAdded ?? '').localeCompare(a.dateAdded ?? ''))
+  return jobs.sort((a, b) =>
+    (b.dateAdded ?? '').localeCompare(a.dateAdded ?? ''),
+  )
 }

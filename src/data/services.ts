@@ -41,9 +41,9 @@ export const SERVICES: Service[] = [
     icon: Ban,
   },
   {
-    slug: 'application-tracker',
-    title: 'Application Tracker',
-    description: 'Your applies, interviews, resumes, and JDs in one place.',
+    slug: 'candidate-directory',
+    title: 'Candidate Directory',
+    description: 'Candidate profiles, current stages, and team contacts.',
     category: 'Job search',
     icon: ListChecks,
   },

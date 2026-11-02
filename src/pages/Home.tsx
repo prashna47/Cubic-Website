@@ -11,7 +11,7 @@ import { SERVICES } from '@/data/services'
 const FEATURED_SLUGS = [
   'interview-booking',
   'resume-prompt',
-  'application-tracker',
+  'candidate-directory',
 ]
 const featuredServices = SERVICES.filter((s) => FEATURED_SLUGS.includes(s.slug))
 

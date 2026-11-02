@@ -74,7 +74,7 @@ function JobRow({ job }: { job: Job }) {
 }
 
 export default function JobHiring() {
-  const [range, setRange] = useState<(typeof RANGES)[number]['key']>('5d')
+  const [range, setRange] = useState<(typeof RANGES)[number]['key']>('all')
   const [query, setQuery] = useState('')
 
   const { data, error, isLoading } = useQuery({

@@ -94,7 +94,7 @@ export default function ApplicationTracker() {
             ← Services
           </Link>
           <h1 className="mt-3 text-3xl font-semibold text-fg">
-            Application Tracker
+            Candidate Directory
           </h1>
           <p className="mt-2 text-muted">
             Live roster of candidates currently in the market.
@@ -199,10 +199,10 @@ export default function ApplicationTracker() {
                   <Link to="/login" className="text-brand hover:underline">
                     Sign in
                   </Link>{' '}
-                  to view the tracker.
+                  to view the directory.
                 </>
               ) : forbidden ? (
-                'This tracker is restricted to the team.'
+                'This directory is restricted to the team.'
               ) : sheetPrivate ? (
                 'Set the Google Sheet to “Anyone with the link can view”, then refresh.'
               ) : (
@@ -233,7 +233,7 @@ export default function ApplicationTracker() {
                     <th className="px-3 py-3 text-left">Mkt Location</th>
                     <th className="px-3 py-3 text-left">Nepal POC</th>
                     <th className="px-3 py-3 text-left">Current Location</th>
-                    <th className="px-5 py-3 text-right">Tracker</th>
+                    <th className="px-5 py-3 text-right">Profile</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
