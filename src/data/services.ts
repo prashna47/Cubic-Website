@@ -6,7 +6,6 @@ import {
   FolderDown,
   ListChecks,
   MessageSquare,
-  Mic,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -68,13 +67,6 @@ export const SERVICES: Service[] = [
     description: 'Download the onboarding documents pack.',
     category: 'Resources & support',
     icon: FolderDown,
-  },
-  {
-    slug: 'pronunciation-class',
-    title: 'Otter & Pronunciation',
-    description: 'Mon–Fri 11:30 AM–1:30 PM CST — one class, one join link.',
-    category: 'Resources & support',
-    icon: Mic,
   },
   {
     slug: 'feedback-form',
