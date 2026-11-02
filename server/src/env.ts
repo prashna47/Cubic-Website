@@ -17,6 +17,12 @@ const schema = z.object({
   // serves the first tab if the name is missing; the header check below covers that.
   INTERVIEWS_SHEET_NAME: z.string().default('Interview Booking'),
   REQUESTS_SHEET_NAME: z.string().default('Booking Requests'),
+  TRACKER_SHEET_GID: z.string().default('1017321045'),
+  RESUME_PROMPT_SHEET_GID: z.string().default('1082897721'),
+  ONBOARDING_SHEET_GID: z.string().default('1178623574'),
+  // Comma-separated emails allowed to view the Application Tracker (it holds
+  // candidates' home addresses). Empty = any signed-in user, with a warning.
+  ADMIN_EMAILS: z.string().default(''),
   CANDIDATES_SHEET_GID: z.string().default('1628186362'),
   // Apps Script web app that appends booking requests to the "Booking Requests" tab.
   BOOKING_WEBHOOK_URL: z.string().default(''),

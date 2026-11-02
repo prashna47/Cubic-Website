@@ -2,13 +2,11 @@ import {
   Ban,
   Briefcase,
   CalendarCheck,
-  ClipboardCheck,
   FileText,
   FolderDown,
   ListChecks,
   MessageSquare,
   Mic,
-  Phone,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -56,20 +54,6 @@ export const SERVICES: Service[] = [
     description: 'Live interview slot availability.',
     category: 'Bookings',
     icon: CalendarCheck,
-  },
-  {
-    slug: 'phone-call-booking',
-    title: 'Phone Call Slot Booking',
-    description: 'Book a support phone call.',
-    category: 'Bookings',
-    icon: Phone,
-  },
-  {
-    slug: 'assessment-booking',
-    title: 'Assessment Booking',
-    description: 'Schedule a candidate assessment.',
-    category: 'Bookings',
-    icon: ClipboardCheck,
   },
   {
     slug: 'resume-prompt',

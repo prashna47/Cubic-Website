@@ -46,23 +46,16 @@ function hourLabel(h: number) {
 }
 
 /** Current date and minutes-since-midnight in Central time. */
-function nowInTz() {
+/** Today's date in Central time. Booking is by calendar day, not time of day. */
+function todayInTz() {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: TZ,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
   }).formatToParts(new Date())
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value)
-  return {
-    y: get('year'),
-    m: get('month'),
-    d: get('day'),
-    minutes: (get('hour') % 24) * 60 + get('minute'),
-  }
+  return { y: get('year'), m: get('month'), d: get('day') }
 }
 
 /** Parses yyyy-mm-dd, m/d/yyyy or anything `Date` understands, to yyyy-mm-dd. */
@@ -149,12 +142,12 @@ async function bookedByHour(fresh: boolean) {
 /** The next business days, each with its slots and seats left. */
 export async function getSchedule(fresh = false): Promise<Day[]> {
   const booked = await bookedByHour(fresh)
-  const now = nowInTz()
-  const todayStr = `${now.y}-${pad(now.m)}-${pad(now.d)}`
+  const today = todayInTz()
+  const todayStr = `${today.y}-${pad(today.m)}-${pad(today.d)}`
 
   // Monday of the current week. On a weekend the week is over, so roll to
   // the coming Monday; the window then advances by itself each week.
-  const cursor = new Date(Date.UTC(now.y, now.m - 1, now.d))
+  const cursor = new Date(Date.UTC(today.y, today.m - 1, today.d))
   const dow0 = cursor.getUTCDay() // 0 = Sunday
   cursor.setUTCDate(
     cursor.getUTCDate() + (dow0 === 6 ? 2 : dow0 === 0 ? 1 : 1 - dow0),
@@ -165,8 +158,9 @@ export async function getSchedule(fresh = false): Promise<Day[]> {
     for (let i = 0; i < 5; i++) {
       const date = `${cursor.getUTCFullYear()}-${pad(cursor.getUTCMonth() + 1)}-${pad(cursor.getUTCDate())}`
       const dow = cursor.getUTCDay()
-      const isPast = date < todayStr
-      const isToday = date === todayStr
+      // Booking closes for the day at midnight — same-day booking isn't
+      // allowed, so today counts as "past" too, one day early.
+      const isPast = date <= todayStr
       const grid = dow === 5 ? FRIDAY_SLOTS : WEEKDAY_SLOTS
       const slots: Slot[] = isPast
         ? []
@@ -179,7 +173,9 @@ export async function getSchedule(fresh = false): Promise<Day[]> {
                 0,
                 SEATS_PER_SLOT - (booked.get(`${date}|${start}`) ?? 0),
               ),
-              past: isToday && now.minutes >= start * 60,
+              // Only future days reach here (today itself is "past" too —
+              // see isPast above), so every slot built here is still bookable.
+              past: false,
             })),
             {
               id: 'emergency',

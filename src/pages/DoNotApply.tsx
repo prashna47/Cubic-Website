@@ -32,7 +32,7 @@ export default function DoNotApply() {
       ?.data?.error === 'sheet_private'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 sm:px-0">
       <div>
         <Link to="/services" className="text-sm text-muted hover:text-fg">
           ← Services

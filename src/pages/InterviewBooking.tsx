@@ -128,7 +128,7 @@ export default function InterviewBooking() {
       ?.data?.error === 'sheet_private'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 sm:px-0">
       <div className="flex items-start justify-between gap-4">
         <div>
           <Link to="/services" className="text-sm text-muted hover:text-fg">
@@ -214,7 +214,9 @@ export default function InterviewBooking() {
                         </h3>
                         <span className="flex items-center gap-3 text-sm text-muted">
                           {day.past ? (
-                            'Passed'
+                            <span className="font-medium text-red-400">
+                              Not available
+                            </span>
                           ) : (
                             <span>
                               <span className="font-medium text-fg tabular-nums">

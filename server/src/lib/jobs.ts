@@ -70,7 +70,9 @@ export async function getDoNotApply(fresh = false): Promise<BlockedCompany[]> {
       company: (row[c] ?? '').trim(),
       reason: (row[r] ?? '').trim(),
     }))
-    .filter((row) => row.company)
+    // A company with no reason isn't shown — a half-filled row usually means
+    // it's still being written, not that it's ready to publish.
+    .filter((row) => row.company && row.reason)
     .sort((a, b) => a.company.localeCompare(b.company))
 }
 

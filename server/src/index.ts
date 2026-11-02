@@ -5,6 +5,10 @@ import { env, webhookEnabled } from './env.js'
 import { usersRouter } from './routes/users.js'
 import { interviewsRouter } from './routes/interviews.js'
 import { jobsRouter } from './routes/jobs.js'
+import { feedbackRouter } from './routes/feedback.js'
+import { onboardingRouter } from './routes/onboarding.js'
+import { resumePromptRouter } from './routes/resumePrompt.js'
+import { trackerRouter } from './routes/tracker.js'
 import { webhooksRouter } from './routes/webhooks.js'
 
 const app = express()
@@ -29,6 +33,10 @@ app.get('/api/health', (_req, res) => {
 app.use('/api', usersRouter)
 app.use('/api', jobsRouter)
 app.use('/api', interviewsRouter)
+app.use('/api', trackerRouter)
+app.use('/api', resumePromptRouter)
+app.use('/api', onboardingRouter)
+app.use('/api', feedbackRouter)
 
 // Fallback 404 for unknown API routes.
 app.use('/api', (_req, res) => {

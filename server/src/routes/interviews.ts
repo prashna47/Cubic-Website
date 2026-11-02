@@ -8,7 +8,7 @@ import {
   getSchedule,
   TIMEZONE_LABEL,
 } from '../lib/interviews.js'
-import { clerkUserId, requireAuth } from '../middleware/auth.js'
+import { clerkUserId, requireApiAuth } from '../middleware/auth.js'
 
 export const interviewsRouter = Router()
 
@@ -72,7 +72,7 @@ interviewsRouter.get('/interview-slots', async (req, res, next) => {
 })
 
 // Candidate names are not public: signed-in users only.
-interviewsRouter.get('/candidates', requireAuth(), async (req, res, next) => {
+interviewsRouter.get('/candidates', requireApiAuth, async (req, res, next) => {
   try {
     const { names, stages, modes, locations } = await getCandidateData(
       req.query.fresh === '1',
@@ -96,7 +96,7 @@ interviewsRouter.get('/candidates', requireAuth(), async (req, res, next) => {
 interviewsRouter.post(
   '/interview-requests',
   express.json({ limit: '9mb' }),
-  requireAuth(),
+  requireApiAuth,
   async (req, res, next) => {
     try {
       if (!env.BOOKING_WEBHOOK_URL) {

@@ -1,8 +1,8 @@
 /**
- * Interview booking requests: receives them from the website, and turns an
- * approval into a booked seat.
+ * Website form submissions: interview booking requests, and anonymous
+ * feedback. One web app handles both, told apart by `body.form`.
  *
- * Flow
+ * Booking flow
  *   1. The website POSTs a request here. It is appended to the "Booking
  *      Requests" tab with Status = Pending (resume saved to Drive).
  *   2. You set Status to Approved or Rejected from the dropdown.
@@ -10,19 +10,25 @@
  *      website reads for availability, so the slot loses a seat. Changing an
  *      approved request to anything else removes that row again.
  *
+ * Feedback flow
+ *   The website POSTs a submission here with no name or email attached
+ *   (the form is anonymous). It is appended to the "Support Feedback" tab.
+ *   Nothing else reads this tab automatically — it's just a record.
+ *
  * Setup (once)
  *   1. Extensions > Apps Script. Paste this file over the old version, save.
  *   2. Project Settings (gear) > Script properties > add TOKEN = a long random
  *      string (also in server/.env as BOOKING_WEBHOOK_TOKEN).
  *   3. Pick the function `setupBookingRequests` in the toolbar and click Run.
- *      Approve the permissions. This creates the tab if needed, adds the
+ *      Approve the permissions. This creates the tabs if needed, adds the
  *      colored Status dropdown, and installs the approval trigger.
  *   4. Deploy > Manage deployments > edit (pencil) > Version: New version >
  *      Deploy. Who has access must be "Anyone". Web app URL goes in
- *      server/.env as BOOKING_WEBHOOK_URL.
+ *      server/.env as BOOKING_WEBHOOK_URL (shared by both forms).
  */
 var SHEET_NAME = 'Booking Requests';
 var INTERVIEW_SHEET_NAME = 'Interview Booking';
+var FEEDBACK_SHEET_NAME = 'Support Feedback';
 var RESUME_FOLDER = 'Interview Request Resumes';
 var STATUS_ROWS = 1000; // how far down the dropdown is applied
 
@@ -30,6 +36,12 @@ var HEADERS = [
   'Submitted At', 'Status', 'Candidate', 'Date', 'Time', 'Duration',
   'Stage', 'Mode', 'Location', 'Client', 'Vendor', 'Panel',
   'Note / Meeting URL', 'Job Description', 'Resume', 'Requested By'
+];
+
+var FEEDBACK_HEADERS = [
+  'Submitted At', 'Interview Support Rating', 'Support Complaint',
+  'Responsiveness Rating', 'Support Suggestions', 'Biggest Blocker',
+  'Other Suggestions', 'Overall Satisfaction Rating'
 ];
 
 var STATUSES = {
@@ -66,28 +78,44 @@ function doPost(e) {
     var token = PropertiesService.getScriptProperties().getProperty('TOKEN');
     if (!token || body.token !== token) return json({ ok: false, error: 'unauthorized' });
 
-    var sheet = requestsSheet();
-
-    var resumeUrl = '';
-    if (body.resume && body.resume.base64) {
-      var blob = Utilities.newBlob(
-        Utilities.base64Decode(body.resume.base64),
-        body.resume.mimeType,
-        body.candidateName + ' - ' + body.resume.name
-      );
-      resumeUrl = resumeFolder().createFile(blob).getUrl();
-    }
-
-    sheet.appendRow([
-      new Date(body.submittedAt), 'Pending', body.candidateName, body.date,
-      body.timeLabel, body.duration, body.stage, body.mode, body.location,
-      body.client, body.vendor, body.panel, body.note, body.jobDescription,
-      resumeUrl, body.requestedBy
-    ]);
-    return json({ ok: true });
+    if (body.form === 'feedback') return submitFeedback(body);
+    return submitBookingRequest(body);
   } catch (err) {
     return json({ ok: false, error: String(err) });
   }
+}
+
+function submitBookingRequest(body) {
+  var sheet = requestsSheet();
+
+  var resumeUrl = '';
+  if (body.resume && body.resume.base64) {
+    var blob = Utilities.newBlob(
+      Utilities.base64Decode(body.resume.base64),
+      body.resume.mimeType,
+      body.candidateName + ' - ' + body.resume.name
+    );
+    resumeUrl = resumeFolder().createFile(blob).getUrl();
+  }
+
+  sheet.appendRow([
+    new Date(body.submittedAt), 'Pending', body.candidateName, body.date,
+    body.timeLabel, body.duration, body.stage, body.mode, body.location,
+    body.client, body.vendor, body.panel, body.note, body.jobDescription,
+    resumeUrl, body.requestedBy
+  ]);
+  return json({ ok: true });
+}
+
+// No name, email, or Clerk user id is ever read or stored here — the form is
+// anonymous by design, so there is nothing to tie a row back to a person.
+function submitFeedback(body) {
+  feedbackSheet().appendRow([
+    new Date(body.submittedAt), body.supportRating, body.supportComplaint,
+    body.responsivenessRating, body.supportSuggestions, body.biggestBlocker,
+    body.otherSuggestions, body.overallRating
+  ]);
+  return json({ ok: true });
 }
 
 // ------------------------------------------------------------------ setup
@@ -96,6 +124,7 @@ function doPost(e) {
 function setupBookingRequests() {
   styleStatusColumn(requestsSheet());
   styleStatusColumn(interviewSheet()); // creates the tab if it is missing
+  feedbackSheet(); // creates the tab if it is missing
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var exists = ScriptApp.getProjectTriggers().some(function (t) {
@@ -254,6 +283,17 @@ function requestsSheet() {
     sheet.appendRow(HEADERS);
     sheet.setFrozenRows(1);
     styleStatusColumn(sheet);
+  }
+  return sheet;
+}
+
+function feedbackSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(FEEDBACK_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(FEEDBACK_SHEET_NAME);
+    sheet.appendRow(FEEDBACK_HEADERS);
+    sheet.setFrozenRows(1);
   }
   return sheet;
 }
