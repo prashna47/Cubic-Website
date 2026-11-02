@@ -49,9 +49,6 @@ export default function Layout() {
             <NavLink to="/" end className={linkClass}>
               Home
             </NavLink>
-            <NavLink to="/about" className={linkClass}>
-              About
-            </NavLink>
             <NavLink to="/services" className={linkClass}>
               Services
             </NavLink>
@@ -84,9 +81,6 @@ export default function Layout() {
             <div className="mx-auto max-w-5xl space-y-1 pt-2">
               <NavLink to="/" end className={mobileLinkClass}>
                 Home
-              </NavLink>
-              <NavLink to="/about" className={mobileLinkClass}>
-                About
               </NavLink>
               <NavLink to="/services" className={mobileLinkClass}>
                 Services

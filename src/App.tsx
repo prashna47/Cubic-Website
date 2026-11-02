@@ -3,7 +3,6 @@ import Layout from '@/components/Layout'
 import ApiAuthBridge from '@/components/ApiAuthBridge'
 import ScrollToTop from '@/components/ScrollToTop'
 import Home from '@/pages/Home'
-import About from '@/pages/About'
 import GetStarted from '@/pages/GetStarted'
 import Services from '@/pages/Services'
 import ServiceDetail from '@/pages/ServiceDetail'
@@ -26,7 +25,6 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
           <Route path="get-started" element={<GetStarted />} />
           <Route path="services" element={<Services />} />
           <Route path="services/job-hiring" element={<JobHiring />} />
