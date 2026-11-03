@@ -55,9 +55,9 @@ export default function Layout() {
             <img
               src="/brand/cubic-alpha-red-wordmark.svg"
               alt="Cubic Alpha"
-              width="264"
-              height="32"
-              className="h-auto w-36 sm:w-44"
+              width="112"
+              height="48"
+              className="h-auto w-24 sm:w-28"
             />
           </Link>
 

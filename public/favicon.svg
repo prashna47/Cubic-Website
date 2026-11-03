@@ -1,19 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <title>Alpha</title>
-  <defs>
-    <linearGradient id="ruby" x1="16" y1="5" x2="46" y2="59" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ee7884"/>
-      <stop offset=".32" stop-color="#c52a40"/>
-      <stop offset=".45" stop-color="#ed6575"/>
-      <stop offset=".57" stop-color="#a51c32"/>
-      <stop offset="1" stop-color="#7d1428"/>
-    </linearGradient>
-    <linearGradient id="shine" x1="17" y1="40" x2="48" y2="51" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#b32940"/>
-      <stop offset=".48" stop-color="#ffb0b9"/>
-      <stop offset="1" stop-color="#d84b60"/>
-    </linearGradient>
-  </defs>
-  <path fill="url(#ruby)" d="M32 5 61 59H47L32 30 17 59H3L32 5Z"/>
-  <path fill="url(#shine)" d="m15 46 42-13-9 13-40 11 7-11Z"/>
+  <title>Cubic Alpha</title>
+  <path fill="#E34B55" d="M32 4 L38 16 L16 59 L3 59 L32 4 Z"/>
+  <path fill="#B62C42" d="M38 16 L61 59 L48 59 L31 28 L38 16 Z"/>
+  <path fill="#F4F4F5" d="M24 39 L42 39 L48 49 L19 49 L24 39 Z"/>
 </svg>
