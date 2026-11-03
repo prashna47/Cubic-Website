@@ -32,7 +32,7 @@ export default function Home() {
               <div className="mt-24">
                 <Link
                   to="/services"
-                  className="group inline-flex min-w-[12rem] items-center justify-center rounded-full border-2 border-brand bg-transparent px-8 pt-4 pb-3.5 text-base font-medium text-brand transition-colors hover:border-brand/50 hover:bg-line/10 active:bg-line/20"
+                  className="brand-gloss group inline-flex min-w-[12rem] items-center justify-center rounded-full border-2 px-8 pt-4 pb-3.5 text-base font-medium transition-[filter]"
                 >
                   Get Started
                   {/* Collapsed at rest so the label is centered; opens on hover. */}

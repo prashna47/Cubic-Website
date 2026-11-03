@@ -8,7 +8,7 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
     'px-3 py-2 rounded-md text-sm font-medium transition-colors',
     isActive
-      ? 'bg-brand text-brand-fg'
+      ? 'brand-gloss'
       : 'text-muted hover:text-fg hover:bg-line/60',
   ].join(' ')
 
@@ -16,7 +16,7 @@ const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
     'block rounded-md px-3 py-2.5 text-base font-medium transition-colors',
     isActive
-      ? 'bg-brand text-brand-fg'
+      ? 'brand-gloss'
       : 'text-muted hover:text-fg hover:bg-line/60',
   ].join(' ')
 
@@ -40,8 +40,25 @@ export default function Layout() {
       <LandingBackground />
       <header className="border-b border-line">
         <nav className="mx-auto flex max-w-5xl items-center gap-2 px-2 py-3">
-          <Link to="/" className="mr-auto font-semibold text-fg">
-            CUBIC&nbsp;ALPHA
+          <Link
+            to="/"
+            aria-label="Cubic Alpha home"
+            className="mr-auto inline-flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:gap-3"
+          >
+            <img
+              src="/brand/alpha-red-symbol.svg"
+              alt=""
+              width="40"
+              height="40"
+              className="h-8 w-8 sm:h-10 sm:w-10"
+            />
+            <img
+              src="/brand/cubic-alpha-red-wordmark.svg"
+              alt="Cubic Alpha"
+              width="264"
+              height="32"
+              className="h-auto w-36 sm:w-44"
+            />
           </Link>
 
           {/* Desktop nav */}

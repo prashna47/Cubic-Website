@@ -9,7 +9,7 @@
   --color-fg: #08060d;
   --color-muted: #6b6375;
   --color-line: #e5e4e7;
-  --color-brand: #1d4ed8;
+  --color-brand: #a71930;
   --color-brand-fg: #ffffff;
 
   --font-sans: 'Inter Variable', system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -45,8 +45,8 @@
     --color-fg: #f3f4f6;
     --color-muted: #9ca3af;
     --color-line: #2e303a;
-    --color-brand: #3b82f6;
-    --color-brand-fg: #ffffff;
+    --color-brand: #e34b55;
+    --color-brand-fg: #0b0b0f;
   }
 }
 
@@ -77,10 +77,33 @@ body.landing {
   --color-fg: #f4f4f5;
   --color-muted: #a1a1aa;
   --color-line: #26262b;
-  --color-brand: #3b82f6;
-  --color-brand-fg: #ffffff;
+  --color-brand: #e34b55;
+  --color-brand-fg: #0b0b0f;
 
   background: #000;
+}
+
+/* Ruby surfaces with a restrained, static reflection. */
+.brand-gloss {
+  color: #fff;
+  border-color: #e34b55;
+  background-color: #a71930;
+  background-image:
+    linear-gradient(
+      115deg,
+      transparent 15%,
+      rgb(255 255 255 / 0.12) 36%,
+      transparent 52%
+    ),
+    linear-gradient(180deg, #c72b40 0%, #ac1d32 48%, #801326 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -1px 0 rgb(0 0 0 / 0.3),
+    0 3px 14px rgb(172 29 50 / 0.16);
+}
+
+.brand-gloss:hover {
+  filter: brightness(1.08);
 }
 
 .landing-bg {

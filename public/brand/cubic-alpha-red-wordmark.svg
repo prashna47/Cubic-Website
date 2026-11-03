@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 264 32" fill="none">
+  <title>Cubic Alpha</title>
+  <defs>
+    <linearGradient id="ruby" x1="0" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ec7884"/>
+      <stop offset=".35" stop-color="#c72a40"/>
+      <stop offset=".45" stop-color="#f1909c"/>
+      <stop offset=".58" stop-color="#af2137"/>
+      <stop offset="1" stop-color="#99182d"/>
+    </linearGradient>
+    <path id="c" d="M19 3H9a6 6 0 0 0-6 6v14a6 6 0 0 0 6 6h10"/>
+    <path id="u" d="M3 3v20a6 6 0 0 0 6 6h6a6 6 0 0 0 6-6V3"/>
+    <path id="b" d="M3 16h11a6.5 6.5 0 0 0 0-13H3v26h12a6.5 6.5 0 0 0 0-13"/>
+    <path id="i" d="M6 3h12M12 3v26M6 29h12"/>
+    <path id="a" d="M2 29 12 3l10 26M6 20h12"/>
+    <path id="l" d="M3 3v26h17"/>
+    <path id="p" d="M3 29V3h11a7 7 0 0 1 0 14H3"/>
+    <path id="h" d="M3 3v26M21 3v26M3 16h18"/>
+  </defs>
+  <g stroke="#f4f4f5" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round">
+    <use href="#c"/>
+    <use href="#u" x="26"/>
+    <use href="#b" x="52"/>
+    <use href="#i" x="78"/>
+    <use href="#c" x="104"/>
+  </g>
+  <g stroke="url(#ruby)" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round">
+    <use href="#a" x="136"/>
+    <use href="#l" x="162"/>
+    <use href="#p" x="188"/>
+    <use href="#h" x="214"/>
+    <use href="#a" x="240"/>
+  </g>
+</svg>
