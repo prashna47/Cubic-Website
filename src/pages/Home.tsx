@@ -19,17 +19,17 @@ export default function Home() {
   return (
     <div>
       <Reveal>
-        <section className="px-4 pt-24 pb-16 sm:px-0 sm:pt-32 sm:pb-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[3fr_2fr]">
+        <section className="ruby-hero">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
             <div>
-              <h1 className="text-5xl font-semibold text-fg">
+              <h1 className="ruby-hero-heading text-fg">
                 Connecting potential with possibility
               </h1>
-              <p className="mt-2 text-muted">
+              <p className="ruby-hero-copy mt-5 text-muted">
                 Helping people find opportunities where they can grow and
                 succeed.
               </p>
-              <div className="mt-24">
+              <div className="ruby-hero-cta">
                 <Link
                   to="/services"
                   className="brand-gloss group inline-flex min-w-[12rem] items-center justify-center rounded-full border-2 px-8 pt-4 pb-3.5 text-base font-medium transition-[filter]"
@@ -69,7 +69,7 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <section className="pt-16 pb-8 sm:pt-24 sm:pb-12">
+        <section className="pt-8 pb-8 sm:pt-12 sm:pb-12">
           <HowItWorks />
         </section>
       </Reveal>

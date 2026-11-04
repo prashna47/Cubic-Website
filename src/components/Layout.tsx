@@ -39,25 +39,18 @@ export default function Layout() {
     <div className="min-h-svh flex flex-col">
       <LandingBackground />
       <header className="border-b border-line">
-        <nav className="mx-auto flex max-w-5xl items-center gap-2 px-2 py-3">
+        <nav className="mx-auto flex max-w-7xl items-center gap-2 px-5 py-3 sm:px-8">
           <Link
             to="/"
             aria-label="Cubic Alpha home"
             className="mr-auto inline-flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:gap-3"
           >
             <img
-              src="/brand/alpha-red-symbol.svg"
-              alt=""
-              width="40"
-              height="40"
-              className="h-8 w-8 sm:h-10 sm:w-10"
-            />
-            <img
-              src="/brand/cubic-alpha-red-wordmark.svg"
+              src="/brand/cubic-alpha-logo.svg"
               alt="Cubic Alpha"
-              width="264"
-              height="32"
-              className="h-auto w-36 sm:w-44"
+              width="144"
+              height="128"
+              className="h-16 w-auto sm:h-20"
             />
           </Link>
 
@@ -95,7 +88,7 @@ export default function Layout() {
 
         {menuOpen && (
           <div className="border-t border-line px-2 pb-3 sm:hidden">
-            <div className="mx-auto max-w-5xl space-y-1 pt-2">
+            <div className="mx-auto max-w-7xl space-y-1 pt-2">
               <NavLink to="/" end className={mobileLinkClass}>
                 Home
               </NavLink>
@@ -107,12 +100,12 @@ export default function Layout() {
         )}
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-2 py-10">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-4 sm:px-8">
         <Outlet />
       </main>
 
       <footer className="border-t border-line">
-        <div className="mx-auto max-w-5xl px-2 py-6 text-sm text-muted">
+        <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 text-sm text-muted">
           &copy; {new Date().getFullYear()} Cubic Alpha. All rights reserved.
         </div>
       </footer>

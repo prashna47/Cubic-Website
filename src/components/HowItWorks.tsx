@@ -1,130 +1,25 @@
-import { useEffect, useState } from 'react'
-import { Target, Trophy, UserPlus, type LucideIcon } from 'lucide-react'
-import SectionTitle from '@/components/SectionTitle'
+import { Search, Users, Rocket } from 'lucide-react'
 
-// Depth (px) of each chevron's point / notch.
-const ARROW = 32
-
-type Step = {
-  title: string
-  description: string
-  icon: LucideIcon
-  featured?: boolean
-}
-
-const STEPS: Step[] = [
-  {
-    title: 'Apply',
-    description:
-      'Share your goals and experience so we can find the right fit.',
-    icon: UserPlus,
-  },
-  {
-    title: 'Get Matched',
-    description:
-      'We connect you with opportunities and get you interview-ready.',
-    icon: Target,
-    featured: true,
-  },
-  {
-    title: 'Get Hired',
-    description: 'Walk into interviews with confidence and land the role.',
-    icon: Trophy,
-  },
+const steps = [
+  { icon: Search, title: 'Discover Opportunities', description: 'Explore roles that match your skills, goals, and career interests.' },
+  { icon: Users, title: 'Get Personalized Support', description: 'Work with our team for guidance, preparation, and a smoother hiring process.' },
+  { icon: Rocket, title: 'Grow Your Career', description: 'Land the right role and keep building toward your long-term success.' },
 ]
 
-/**
- * A right-pointing chevron: straight left edge unless `notchLeft`, straight
- * right edge unless `pointRight`. Cards are laid out with a `-ARROW` margin
- * so each point tucks exactly into the next card's notch.
- */
-function chevronClipPath(notchLeft: boolean, pointRight: boolean) {
-  const right = pointRight
-    ? `calc(100% - ${ARROW}px) 0, 100% 50%, calc(100% - ${ARROW}px) 100%`
-    : '100% 0, 100% 100%'
-  const leftNotch = notchLeft ? `, ${ARROW}px 50%` : ''
-  return `polygon(0 0, ${right}, 0 100%${leftNotch})`
-}
-
-/**
- * True at Tailwind's `sm` breakpoint (640px) and up. Below it, the chevron
- * shapes clip too much of an already-narrow column to stay readable, so
- * cards stack as plain cards instead.
- */
-function useIsSmUp() {
-  const [isSmUp, setIsSmUp] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(min-width: 640px)').matches,
-  )
-
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 640px)')
-    const onChange = () => setIsSmUp(mql.matches)
-    mql.addEventListener('change', onChange)
-    return () => mql.removeEventListener('change', onChange)
-  }, [])
-
-  return isSmUp
-}
-
 export default function HowItWorks() {
-  const isSmUp = useIsSmUp()
-
   return (
-    <div>
-      <SectionTitle
-        eyebrow="How It Works"
-        heading={
-          <>
-            Three simple steps to{' '}
-            <span className="text-brand">your next role</span>
-          </>
-        }
-      />
-      <div className={isSmUp ? 'mt-24 flex' : 'mt-24 flex flex-col gap-4'}>
-        {STEPS.map((step, i) => {
-          const Icon = step.icon
-          const isFirst = i === 0
-          const isLast = i === STEPS.length - 1
-          return (
-            <div
-              key={step.title}
-              style={
-                isSmUp
-                  ? {
-                      clipPath: chevronClipPath(!isFirst, !isLast),
-                      marginLeft: isFirst ? 0 : -ARROW,
-                    }
-                  : undefined
-              }
-              className={[
-                'flex flex-col justify-center px-8 py-8 sm:px-10 sm:py-10',
-                isSmUp ? 'min-h-[18rem] flex-1' : 'rounded-xl',
-                step.featured ? 'bg-brand text-brand-fg' : 'bg-white/5 text-fg',
-              ].join(' ')}
-            >
-              <Icon
-                className={
-                  step.featured ? 'h-9 w-9 text-brand-fg' : 'h-9 w-9 text-brand'
-                }
-                strokeWidth={1.5}
-                aria-hidden="true"
-              />
-              <h3 className="mt-4 text-lg font-semibold">{step.title}</h3>
-              <p
-                className={
-                  step.featured
-                    ? 'mt-2 text-sm text-brand-fg/80'
-                    : 'mt-2 text-sm text-muted'
-                }
-              >
-                {step.description}
-              </p>
-            </div>
-          )
-        })}
+    <section aria-labelledby="how-it-works-title">
+      <p className="text-xs font-semibold tracking-[0.2em] text-brand">HOW IT WORKS</p>
+      <h2 id="how-it-works-title" className="mt-3 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">Your next opportunity starts here</h2>
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        {steps.map(({ icon: Icon, title, description }) => (
+          <article key={title} className="ruby-step-card">
+            <Icon className="h-9 w-9 text-brand" strokeWidth={1.5} aria-hidden="true" />
+            <h3 className="mt-5 text-lg font-semibold text-fg">{title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p>
+          </article>
+        ))}
       </div>
-    </div>
+    </section>
   )
 }
