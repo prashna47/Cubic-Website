@@ -3,6 +3,55 @@
 React + Vite frontend, Express + Prisma API. Auth by **Clerk**, database on
 **Neon Postgres**.
 
+## Service access and API protection
+
+Services require a Clerk sign-in and a verified primary email listed in the
+**Approved Email** tab of the configured Google Sheet. Enter one email per row
+in column A. An `Email` header is optional. Adding a row approves that address;
+removing it revokes access. Addresses are matched exactly, ignoring case and
+surrounding spaces. Secondary emails do not grant access to another primary email.
+Use `APPROVED_USERS_SHEET_NAME` in `server/.env` to change the tab name.
+
+Signed-out visitors are sent to login and returned to their selected service.
+Unapproved accounts see “Unverified user cannot access services”. The API enforces
+the same policy on every service endpoint, including feedback and downloads.
+An unavailable or malformed approval list denies access; it never opens access.
+Candidate Directory retains its additional `ADMIN_EMAILS` restriction when set.
+
+Approval reads share an in-flight request and a three-second server cache. Open
+service pages recheck approval every 30 seconds and on window focus. Other Sheet
+data keeps its existing 60-second cache, with a three-second minimum for manual
+refreshes. Job metadata uses bounded caches and shares concurrent lookups.
+Authenticated API responses use `Cache-Control: no-store`; browser query data is
+cleared on account changes and denied approval. API requests time out after 45
+seconds, and authorization/rate-limit failures are not automatically retried.
+
+The API allows 120 requests per minute per IP and 10 service submissions per
+minute per authenticated user. Excess requests return 429 and `Retry-After`.
+Limits use bounded, per-process memory and reset on server restart. A deployment
+with multiple server instances needs a shared limiter store. Proxy headers are
+not trusted by default: configure Express proxy trust for your known hosting
+proxy before using per-client IP limits behind a reverse proxy.
+
+Approval protects this website and its API. Existing Google Sheet/Drive sharing
+permissions still apply to anyone opening the source links directly; do not
+treat website approval as making publicly shared source files private.
+
+To verify approved email/account status without printing credentials:
+
+```powershell
+npm run build --prefix server
+cd server
+node scripts/check-approved-users.mjs
+```
+
+Security and cache regression checks (from the project root):
+
+```powershell
+npm run build --prefix server
+node --test server/tests/*.test.mjs
+```
+
 ## Requirements
 
 - Node.js 20+ (installed: v24)

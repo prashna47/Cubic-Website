@@ -305,16 +305,29 @@ async function fetchMeta(rawUrl: string): Promise<{ meta: Meta; ok: boolean }> {
   }
 }
 
+const metaInflight = new Map<string, Promise<Meta>>()
+
 async function getMeta(url: string): Promise<Meta> {
   const hit = metaCache.get(url)
   if (hit && Date.now() - hit.at < hit.ttl) return hit.meta
-  const { meta, ok } = await fetchMeta(url)
-  metaCache.set(url, {
-    at: Date.now(),
-    ttl: ok ? META_TTL_MS : META_FAIL_TTL_MS,
-    meta,
-  })
-  return meta
+  const pending = metaInflight.get(url)
+  if (pending) return pending
+  const request = fetchMeta(url)
+    .then(({ meta, ok }) => {
+      if (metaCache.size >= 2000)
+        metaCache.delete(metaCache.keys().next().value!)
+      metaCache.set(url, {
+        at: Date.now(),
+        ttl: ok ? META_TTL_MS : META_FAIL_TTL_MS,
+        meta,
+      })
+      return meta
+    })
+    .finally(() => {
+      metaInflight.delete(url)
+    })
+  metaInflight.set(url, request)
+  return request
 }
 
 /** Runs `fn` over `items` with at most `limit` in flight. */

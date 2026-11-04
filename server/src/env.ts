@@ -9,6 +9,7 @@ const schema = z.object({
   CLERK_WEBHOOK_SIGNING_SECRET: z.string().optional().default(''),
   PORT: z.coerce.number().default(4000),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
+  APPROVED_USERS_SHEET_NAME: z.string().trim().min(1).default('Approved Email'),
   // Google Sheet holding the job links (must be shared as "anyone with the link can view").
   JOBS_SHEET_ID: z.string().default('1sR3SRYNhqqJYTBfm82ESHS3hvPyWFBHxb_HKKhwFsa8'),
   JOBS_SHEET_GID: z.string().default('0'),
@@ -20,8 +21,7 @@ const schema = z.object({
   TRACKER_SHEET_GID: z.string().default('1017321045'),
   RESUME_PROMPT_SHEET_GID: z.string().default('1082897721'),
   ONBOARDING_SHEET_GID: z.string().default('1178623574'),
-  // Comma-separated emails allowed to view the Application Tracker (it holds
-  // candidates' home addresses). Empty = any signed-in user, with a warning.
+  // Additional Candidate Directory restriction. Empty = approved service users.
   ADMIN_EMAILS: z.string().default(''),
   CANDIDATES_SHEET_GID: z.string().default('1628186362'),
   // Apps Script web app that appends booking requests to the "Booking Requests" tab.

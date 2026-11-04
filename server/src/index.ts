@@ -10,17 +10,32 @@ import { onboardingRouter } from './routes/onboarding.js'
 import { resumePromptRouter } from './routes/resumePrompt.js'
 import { trackerRouter } from './routes/tracker.js'
 import { webhooksRouter } from './routes/webhooks.js'
+import { requireApprovedServices } from './middleware/serviceAccess.js'
+import { createRateLimiter } from './middleware/rateLimit.js'
+import { clerkUserId } from './middleware/auth.js'
 
 const app = express()
+app.disable('x-powered-by')
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Cache-Control', 'no-store')
+  next()
+})
 
 app.use(cors({ origin: env.CLIENT_URL }))
+app.use('/api', createRateLimiter({ limit: 120 }))
+const submissionLimit = createRateLimiter({ limit: 10, key: clerkUserId })
 
 // Webhooks need the raw body, so mount them before express.json().
 app.use('/api/webhooks', webhooksRouter)
 
 // Interview requests carry a resume, so they get their own body limit (see route).
 app.use((req, res, next) =>
-  req.path === '/api/interview-requests' ? next() : express.json()(req, res, next),
+  req.path === '/api/interview-requests'
+    ? next()
+    : express.json()(req, res, next),
 )
 
 // Reads the Clerk session from the request (Authorization header / cookie).
@@ -31,6 +46,14 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api', usersRouter)
+// All service endpoints, including direct API requests, require approval.
+app.use('/api', requireApprovedServices)
+app.get('/api/service-access', (_req, res) => res.json({ approved: true }))
+app.use('/api', (req, res, next) =>
+  ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)
+    ? submissionLimit(req, res, next)
+    : next(),
+)
 app.use('/api', jobsRouter)
 app.use('/api', interviewsRouter)
 app.use('/api', trackerRouter)
@@ -52,6 +75,22 @@ app.use(
     _next: express.NextFunction,
   ) => {
     console.error(err)
+    const type = (err as { type?: string })?.type
+    if (type === 'entity.too.large') {
+      res
+        .status(413)
+        .json({
+          error: 'payload_too_large',
+          message: 'Uploaded request is too large.',
+        })
+      return
+    }
+    if (type === 'entity.parse.failed') {
+      res
+        .status(400)
+        .json({ error: 'invalid_json', message: 'Invalid request body.' })
+      return
+    }
     res.status(500).json({ error: 'Internal server error' })
   },
 )

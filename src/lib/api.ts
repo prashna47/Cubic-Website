@@ -10,6 +10,7 @@ import axios from 'axios'
 export const api = axios.create({
   // `||` so an empty VITE_API_URL still falls back to the dev proxy.
   baseURL: import.meta.env.VITE_API_URL || '/api',
+  timeout: 45_000,
   headers: { 'Content-Type': 'application/json' },
 })
 

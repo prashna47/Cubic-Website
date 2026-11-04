@@ -9,16 +9,15 @@ const allowlist = env.ADMIN_EMAILS.split(',')
 
 if (allowlist.length === 0) {
   console.warn(
-    'ADMIN_EMAILS is not set: any signed-in user can open the Application ' +
-      'Tracker, which includes candidates’ home addresses. Set ADMIN_EMAILS ' +
+    'ADMIN_EMAILS is not set: any approved service user can open the Candidate ' +
+      'Directory, which includes candidate information. Set ADMIN_EMAILS ' +
       'in server/.env to restrict it.',
   )
 }
 
 /**
  * Sign-in plus an email allowlist (ADMIN_EMAILS). With no allowlist configured,
- * falls back to "any signed-in user" (see the startup warning above) so the
- * route still works before that's set up.
+ * falls back to the service approval requirement enforced in index.ts.
  */
 export const requireAdmin = [
   requireApiAuth,
