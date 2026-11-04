@@ -68,9 +68,8 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Landing page: black background with soft white blobs drifting very slowly.
-   Home.tsx toggles `body.landing` (dark token overrides so the header/footer
-   stay legible in either OS theme) and renders <LandingBackground />.
+   Layout provides a slowly drifting ruby canvas over the dark main palette.
+   The landing tokens keep the header/footer legible in either OS theme.
 --------------------------------------------------------------------------- */
 body.landing {
   --color-bg: #0b0b0d;

@@ -46,11 +46,18 @@ export default function Layout() {
             className="mr-auto inline-flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:gap-3"
           >
             <img
-              src="/brand/cubic-alpha-logo.svg"
+              src="/brand/ruby-cube-logo.svg"
+              alt=""
+              width="40"
+              height="44"
+              className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+            />
+            <img
+              src="/brand/cubic-alpha-red-wordmark.svg"
               alt="Cubic Alpha"
-              width="144"
-              height="128"
-              className="h-16 w-auto sm:h-20"
+              width="124"
+              height="22"
+              className="h-auto w-36 sm:w-44"
             />
           </Link>
 

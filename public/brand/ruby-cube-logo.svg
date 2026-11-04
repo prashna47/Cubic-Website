@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72" fill="none">
+  <title>Cubic Alpha ruby cube</title>
+  <defs>
+    <linearGradient id="top" x1="8" y1="20" x2="49" y2="9" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffe0e6"/>
+      <stop offset=".22" stop-color="#fa5474"/>
+      <stop offset=".58" stop-color="#ca143e"/>
+      <stop offset="1" stop-color="#810721"/>
+    </linearGradient>
+    <linearGradient id="left" x1="5" y1="19" x2="32" y2="65" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f13860"/>
+      <stop offset=".45" stop-color="#9c0a2d"/>
+      <stop offset="1" stop-color="#5b041b"/>
+    </linearGradient>
+    <linearGradient id="right" x1="60" y1="22" x2="32" y2="65" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#59051b"/>
+      <stop offset=".5" stop-color="#a00830"/>
+      <stop offset=".8" stop-color="#d91c48"/>
+      <stop offset="1" stop-color="#fc496d"/>
+    </linearGradient>
+    <linearGradient id="glint" x1="5" y1="18" x2="59" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff3f6"/>
+      <stop offset=".5" stop-color="#ff9aaf"/>
+      <stop offset="1" stop-color="#ef4266"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#d9234d" stroke-width=".9" stroke-linejoin="round">
+    <path d="M4 18 32 34v34L4 52V18Z" fill="url(#left)"/>
+    <path d="m32 34 28-16v34L32 68V34Z" fill="url(#right)"/>
+    <path d="M32 3 60 18 32 34 4 18 32 3Z" fill="url(#top)"/>
+  </g>
+  <path d="m5 20 26 15L5 49V20Z" fill="#ff5978" opacity=".14"/>
+  <path d="M4 18 32 34 60 18M32 34v34" stroke="url(#glint)" stroke-width="1.1" stroke-linejoin="round"/>
+  <path d="M6 18 31 4" stroke="#ffb3c4" stroke-opacity=".6" stroke-width=".7"/>
+</svg>
